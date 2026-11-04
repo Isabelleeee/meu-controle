@@ -222,11 +222,13 @@ function renderStats(){
 function render(){renderStats();renderRenda();renderOrcamento();renderFatura();renderLancamentos();renderExtrato();renderFixos();}
 function atualizarAcesso(session){$('loginScreen').style.display=session?'none':'flex';$('appShell').style.visibility=session?'visible':'hidden';if(!session)setStatus('Entre para sincronizar seus dados.');}
 let activeUserId=null; let loadingUserId=null;
+// Ao sair, apaga a cópia local: o próximo login começa limpo e carrega só os dados da própria conta.
+function limparDadosLocais(){ state={transactions:[], installments:[], budgets:{}}; try{ localStorage.removeItem(STORAGE_KEY); }catch(e){} editandoTx=null; extratoSplitAberto=null; render(); }
 async function handleSession(session){atualizarAcesso(session);if(!session){activeUserId=null;return;}if(loadingUserId===session.user.id || activeUserId===session.user.id)return;loadingUserId=session.user.id;try{await carregarDadosDaNuvem(session);activeUserId=session.user.id;await carregarExtras();}catch(error){setStatus('Erro ao sincronizar');console.error('Erro ao carregar dados do Supabase:',error.message);$('loginMessage').textContent='Login realizado, mas houve erro ao carregar os dados: '+error.message;}finally{loadingUserId=null;}}
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginButton').disabled=true;$('loginButton').textContent='Entrando…';$('loginMessage').textContent='';try{const {data,error}=await supabaseClient.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error)throw error;atualizarAcesso(data.session);await handleSession(data.session);$('loginMessage').textContent='';}catch(error){$('loginMessage').textContent=error.message==='Invalid login credentials'?'E-mail ou senha incorretos.':'Não foi possível entrar: '+error.message;}finally{$('loginButton').disabled=false;$('loginButton').textContent='Entrar';}});
 supabaseClient.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>{void handleSession(session);},0);});
 supabaseClient.auth.getSession().then(({data,error})=>{if(error){console.error('Erro ao verificar sessão:',error.message);$('loginMessage').textContent='Não foi possível verificar a sessão.';return;}void handleSession(data.session);});
-$('logoutBtn').addEventListener('click',async()=>{const {error}=await supabaseClient.auth.signOut();if(error){alert('Não foi possível sair: '+error.message);return;}activeUserId=null;limparExtras();atualizarAcesso(null);$('loginPassword').value='';});
+$('logoutBtn').addEventListener('click',async()=>{const {error}=await supabaseClient.auth.signOut();if(error){alert('Não foi possível sair: '+error.message);return;}activeUserId=null;limparDadosLocais();limparExtras();atualizarAcesso(null);$('loginPassword').value='';});
 document.addEventListener('click',async e=>{const td=e.target.closest('[data-delete-transaction]');if(td){const id=td.dataset.deleteTransaction;if(!confirm('Excluir esta transação?'))return;state.transactions=state.transactions.filter(t=>t.id!==id);saveLocal();render();try{const {data:{session}}=await supabaseClient.auth.getSession();if(session){const {error}=await supabaseClient.from('transactions').delete().eq('id',id).eq('user_id',session.user.id);if(error)throw error;}setStatus('Transação excluída');}catch(error){console.error('Erro ao excluir transação:',error.message);alert('Foi removida do painel, mas houve erro ao excluir da nuvem: '+error.message);}return;}const ins=e.target.closest('[data-delete-installment]');if(ins){const id=ins.dataset.deleteInstallment;if(!confirm('Excluir esta parcela?'))return;state.installments=state.installments.filter(i=>i.id!==id);saveLocal();render();try{const {data:{session}}=await supabaseClient.auth.getSession();if(session){const {error}=await supabaseClient.from('installments').delete().eq('id',id).eq('user_id',session.user.id);if(error)throw error;}setStatus('Parcela excluída');}catch(error){console.error('Erro ao excluir parcela:',error.message);alert('Foi removida do painel, mas houve erro ao excluir da nuvem: '+error.message);}}});
 $('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='backup-controle-financeiro.json';a.click();URL.revokeObjectURL(url);});
 $('newTransactionBtn').addEventListener('click',()=>abrirLancamento('tx'));
@@ -527,7 +529,7 @@ function renderFatura(){
    const desc = fora ? `<span class="marca">${safe(i.name)}</span>` : safe(i.name);
    const val = fora ? `<span class="marca">${money(i.amount)}</span>` : money(i.amount);
    const num = numeroParcela(i, venc);
-   return `<div class="invoice-row"><div class="desc"><div>${desc}</div><span class="meta">${num ? 'Parcela ' + num : ''}${fora ? (num ? ' — ' : '') + (i.account === 'Mãe' ? 'por fora, direto para a mãe' : 'por fora — ' + safe(i.account)) : ''}</span></div><div class="val">${val}<button type="button" class="icon-btn" data-delete-installment="${safe(i.id)}" aria-label="Excluir parcelamento">✕</button></div></div>`;
+   return `<div class="invoice-row"><div class="desc"><div>${desc}</div><span class="meta">${num ? 'Parcela ' + num : ''}${fora ? (num ? ' — ' : '') + (i.account === 'Mãe' ? 'por fora, direto para a mãe' : 'por fora — ' + safe(i.account)) : ''}</span></div><div class="val"><button type="button" class="link-btn" data-edit-inst="${safe(i.id)}">Editar</button>${val}<button type="button" class="icon-btn" data-delete-installment="${safe(i.id)}" aria-label="Excluir parcelamento">✕</button></div></div>${editorInst(i)}`;
  };
  const parcelas = [...parcCartao.map(i => linhaParcela(i, false)), ...parcFora.map(i => linhaParcela(i, true))].join('');
 
@@ -602,7 +604,7 @@ function renderLancamentos(){
    const num = (!i.startMonth || i.startMonth <= aberta) ? numeroParcela(i, aberta) : '';
    const fim = new Date(i.endMonth + '-02T12:00:00').toLocaleDateString('pt-BR', {month:'short', year:'numeric'}).replace('.', '');
    const nome = i.account === 'Mãe' ? `<span class="marca">${safe(i.name)}</span>` : safe(i.name);
-   return `<div class="invoice-row"><div class="desc"><div>${nome}<span class="inst-acc">${safe(nomeConta(i.account))}</span></div><span class="meta">${num ? 'Parcela ' + num + ' na fatura aberta — ' : ''}última em ${fim}</span></div><div class="val">${money(i.amount)}<button type="button" class="icon-btn" data-delete-installment="${safe(i.id)}" aria-label="Excluir parcelamento">✕</button></div></div>`;
+   return `<div class="invoice-row"><div class="desc"><div>${nome}<span class="inst-acc">${safe(nomeConta(i.account))}</span></div><span class="meta">${num ? 'Parcela ' + num + ' na fatura aberta — ' : ''}última em ${fim}</span></div><div class="val"><button type="button" class="link-btn" data-edit-inst="${safe(i.id)}">Editar</button>${money(i.amount)}<button type="button" class="icon-btn" data-delete-installment="${safe(i.id)}" aria-label="Excluir parcelamento">✕</button></div></div>${editorInst(i)}`;
  }).join('') : '<div class="invoice-empty">Nenhum parcelamento ativo.</div>';
 }
 $('installmentForm').addEventListener('submit', async e => {
@@ -855,7 +857,7 @@ function renderExtrato(){
    const fora = CONTAS_FORA_DO_CARTAO_MAE.includes(i.account), num = numeroParcela(i, venc);
    const nome = fora ? `<span class="marca">${safe(i.name)}</span>` : safe(i.name);
    const val = fora ? `<span class="marca">${money(i.amount)}</span>` : money(i.amount);
-   html += `<div class="invoice-row"><div class="desc"><div>${nome}</div><span class="meta">${num ? 'Parcela ' + num + ' — ' : ''}${safe(nomeContaExtrato(i.account))}</span></div><div class="val">${val}<button type="button" class="icon-btn" data-delete-installment="${safe(i.id)}" aria-label="Excluir parcelamento">✕</button></div></div>`;
+   html += `<div class="invoice-row"><div class="desc"><div>${nome}</div><span class="meta">${num ? 'Parcela ' + num + ' — ' : ''}${safe(nomeContaExtrato(i.account))}</span></div><div class="val"><button type="button" class="link-btn" data-edit-inst="${safe(i.id)}">Editar</button>${val}<button type="button" class="icon-btn" data-delete-installment="${safe(i.id)}" aria-label="Excluir parcelamento">✕</button></div></div>${editorInst(i)}`;
  }
  if(!parcelas.length) html += '<div class="invoice-empty">Nenhum parcelamento nesta fatura.</div>';
  html += '</div>';
@@ -1200,7 +1202,7 @@ async function carregarFixos(){
 function renderFixos(){
  if(!$('fixedList')) return;
  $('fixedList').innerHTML = extra.fixos.length
-   ? extra.fixos.map(f => `<div class="invoice-row"><div class="desc"><div>${safe(f.name)}</div><span class="meta">${safe(nomeContaExtrato(f.account))}</span></div><div class="val">${money(f.amount)}<button type="button" class="icon-btn" data-delete-fixed="${safe(f.id)}" aria-label="Remover gasto fixo">✕</button></div></div>`).join('')
+   ? extra.fixos.map(f => `<div class="invoice-row"><div class="desc"><div>${safe(f.name)}</div><span class="meta">${safe(nomeContaExtrato(f.account))}</span></div><div class="val"><button type="button" class="link-btn" data-edit-fixed="${safe(f.id)}">Editar</button>${money(f.amount)}<button type="button" class="icon-btn" data-delete-fixed="${safe(f.id)}" aria-label="Remover gasto fixo">✕</button></div></div>${editorFixo(f)}`).join('')
      + `<div class="invoice-row"><div class="desc"><strong>Total por mês</strong></div><div class="val">${money(extra.fixos.reduce((s, f) => s + f.amount, 0))}</div></div>`
    : '<div class="invoice-empty">Nenhum gasto fixo cadastrado.</div>';
 }
@@ -1268,6 +1270,81 @@ $('payableList').addEventListener('click', async e => {
  const {error} = await q;
  if(error){ alert('Não foi possível atualizar: ' + error.message); return; }
  await carregarPagar(); setStatus(pg ? 'Dívida marcada como paga' : 'Dívida excluída');
+});
+
+// ===== Editar parcelamentos e gastos fixos =====
+let editandoInst = null, editandoFixo = null;
+const rerenderListas = () => { renderFatura(); renderLancamentos(); renderExtrato(); renderFixos(); };
+
+function editorInst(i){
+ if(editandoInst !== i.id) return '';
+ const aberta = faturaAberta();
+ const total = i.total || (i.startMonth ? mesesEntre(i.startMonth, i.endMonth) + 1 : '');
+ const atual = i.startMonth ? Math.max(1, mesesEntre(i.startMonth, aberta) + 1) : 1;
+ const opcoes = [...$('instAccount').options].map(o => ({v:o.value, l:o.textContent}));
+ if(i.account && !opcoes.some(o => o.v === i.account)) opcoes.push({v:i.account, l:i.account});
+ return `<div class="split-editor" data-inst-box="${safe(i.id)}"><div class="form-grid">
+   <div class="field"><label>Descrição</label><input data-e="name" maxlength="100" value="${safe(i.name)}"></div>
+   <div class="field"><label>Valor da parcela (R$)</label><input data-e="amount" type="number" min="0.01" step="0.01" value="${Number(i.amount).toFixed(2)}"></div>
+   <div class="field"><label>Parcela na fatura aberta (${nomeMesLongo(aberta)})</label><input data-e="atual" type="number" min="1" step="1" value="${atual}"></div>
+   <div class="field"><label>Total de parcelas</label><input data-e="total" type="number" min="1" step="1" value="${total}"></div>
+   <div class="field"><label>Onde é cobrado</label><select data-e="account">${opcoes.map(o => `<option value="${safe(o.v)}"${o.v === i.account ? ' selected' : ''}>${safe(o.l)}</option>`).join('')}</select></div>
+ </div><div class="capture-foot"><span class="stat-foot">As faturas em que a parcela aparece são recalculadas a partir da parcela atual e do total.</span><div class="capture-actions"><button type="button" class="secondary" data-inst-cancel>Cancelar</button><button type="button" data-inst-save>Salvar alterações</button></div></div></div>`;
+}
+
+async function salvarInst(box, btn){
+ const i = state.installments.find(x => x.id === box.dataset.instBox); if(!i) return;
+ const val = k => box.querySelector(`[data-e="${k}"]`).value;
+ const name = val('name').trim(), amount = Number(val('amount')), atual = parseInt(val('atual'), 10), total = parseInt(val('total'), 10), account = val('account');
+ if(!name){ alert('Informe a descrição.'); return; }
+ if(!(amount > 0)){ alert('Informe um valor maior que zero.'); return; }
+ if(!(total >= 1) || !(atual >= 1) || atual > total){ alert('A parcela atual precisa estar entre 1 e o total de parcelas.'); return; }
+ const startMonth = ymAdd(faturaAberta(), -(atual - 1)), endMonth = ymAdd(startMonth, total - 1);
+ const upd = {description:name, installment_amount:round2(amount), total_installments:total, current_installment:atual, start_date:`${startMonth}-01`, end_date:`${endMonth}-01`, account:account || null};
+ btn.disabled = true; btn.textContent = 'Salvando…';
+ const {error} = await supabaseClient.from('installments').update(upd).eq('id', i.id);
+ if(error){ console.error('Erro ao editar parcelamento:', error.message); alert('Não foi possível salvar: ' + error.message); btn.disabled = false; btn.textContent = 'Salvar alterações'; return; }
+ Object.assign(i, {name, amount:upd.installment_amount, total, current:atual, startMonth, endMonth, account:account || ''});
+ editandoInst = null; saveLocal(); render(); setStatus('Parcelamento atualizado');
+}
+
+function editorFixo(f){
+ if(editandoFixo !== f.id) return '';
+ const opcoes = [...$('fixAccount').options].map(o => ({v:o.value, l:o.textContent}));
+ if(f.account && !opcoes.some(o => o.v === f.account)) opcoes.push({v:f.account, l:f.account});
+ return `<div class="split-editor" data-fixo-box="${safe(f.id)}"><div class="form-grid">
+   <div class="field"><label>Nome</label><input data-e="name" maxlength="60" value="${safe(f.name)}"></div>
+   <div class="field"><label>Valor mensal (R$)</label><input data-e="amount" type="number" min="0.01" step="0.01" value="${Number(f.amount).toFixed(2)}"></div>
+   <div class="field"><label>Onde é cobrado</label><select data-e="account">${opcoes.map(o => `<option value="${safe(o.v)}"${o.v === f.account ? ' selected' : ''}>${safe(o.l)}</option>`).join('')}</select></div>
+ </div><div class="capture-foot"><span></span><div class="capture-actions"><button type="button" class="secondary" data-fixo-cancel>Cancelar</button><button type="button" data-fixo-save>Salvar alterações</button></div></div></div>`;
+}
+
+async function salvarFixo(box, btn){
+ const f = extra.fixos.find(x => x.id === box.dataset.fixoBox); if(!f) return;
+ const val = k => box.querySelector(`[data-e="${k}"]`).value;
+ const upd = {name:val('name').trim(), amount:round2(Number(val('amount'))), account:val('account') || null};
+ if(!upd.name || !(upd.amount > 0)){ alert('Informe o nome e um valor maior que zero.'); return; }
+ btn.disabled = true; btn.textContent = 'Salvando…';
+ const {error} = await supabaseClient.from('fixed_expenses').update(upd).eq('id', f.id);
+ if(error){ console.error('Erro ao editar gasto fixo:', error.message); alert('Não foi possível salvar: ' + error.message); btn.disabled = false; btn.textContent = 'Salvar alterações'; return; }
+ Object.assign(f, upd); editandoFixo = null; render(); setStatus('Gasto fixo atualizado');
+}
+
+document.addEventListener('click', e => {
+ const ei = e.target.closest('[data-edit-inst]');
+ if(ei){ editandoInst = editandoInst === ei.dataset.editInst ? null : ei.dataset.editInst; rerenderListas(); return; }
+ const ef = e.target.closest('[data-edit-fixed]');
+ if(ef){ editandoFixo = editandoFixo === ef.dataset.editFixed ? null : ef.dataset.editFixed; renderFixos(); return; }
+ const ib = e.target.closest('[data-inst-box]');
+ if(ib){
+   if(e.target.closest('[data-inst-cancel]')){ editandoInst = null; rerenderListas(); return; }
+   const sv = e.target.closest('[data-inst-save]'); if(sv) void salvarInst(ib, sv); return;
+ }
+ const fb = e.target.closest('[data-fixo-box]');
+ if(fb){
+   if(e.target.closest('[data-fixo-cancel]')){ editandoFixo = null; renderFixos(); return; }
+   const sv = e.target.closest('[data-fixo-save]'); if(sv) void salvarFixo(fb, sv);
+ }
 });
 aplicarConfig(null);
 irPara(location.hash.slice(1));render();renderPending();renderReceivables();renderFixos();renderPagar();
