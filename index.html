@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#24213f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Meu Controle">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<title>Meu Controle Financeiro</title>
+<style>
+:root{--bg:#f5f6fb;--panel:#fff;--text:#20223a;--muted:#777b91;--line:#e9eaf2;--primary:#6657d9;--primary2:#8a7cf3;--green:#168765;--red:#d64f70;--shadow:0 10px 30px rgba(34,35,75,.06)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:11px;padding:11px 15px;background:var(--primary);color:#fff;font-weight:650}button:disabled{opacity:.6;cursor:wait}button.secondary{background:#f0efff;color:var(--primary)}button.danger{background:#fff0f3;color:var(--red);padding:7px 10px}.app{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh}.sidebar{background:#24213f;color:#fff;padding:28px 18px}.brand{font-size:19px;font-weight:800;letter-spacing:-.4px;margin:0 10px 34px}.brand span{color:#b9b0ff}.nav-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:#aaa6c9;margin:24px 12px 9px}.nav{display:block;padding:11px 13px;border-radius:10px;color:#dedcf2;text-decoration:none;margin:4px 0}.nav.active,.nav:hover{background:#3c3767;color:#fff}.sidebar-note{margin:40px 8px 0;padding:14px;background:#302c52;border-radius:12px;font-size:12px;color:#d2cfee}.main{padding:30px;max-width:1500px;width:100%;margin:auto}.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}.eyebrow{color:var(--muted);font-size:13px}.topbar h1{font-size:27px;letter-spacing:-.7px;margin:2px 0 0}.top-actions{display:flex;gap:10px;flex-wrap:wrap}.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow);min-width:0}.stat-label{color:var(--muted);font-size:13px}.stat-value{font-size:25px;font-weight:800;letter-spacing:-.7px;margin:9px 0 4px}.stat-foot{font-size:12px;color:var(--muted)}.stat-icon{width:37px;height:37px;display:grid;place-items:center;border-radius:12px;background:#f0efff;color:var(--primary);font-size:18px;float:right}.green{color:var(--green)}.red{color:var(--red)}.middle{grid-template-columns:1.2fr .8fr;margin-bottom:18px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.section-head h2{font-size:16px;margin:0}.section-head p{margin:3px 0 0;color:var(--muted);font-size:12px}.budget-big{font-size:23px;font-weight:800;margin:8px 0 12px}.progress{height:9px;background:#efeff6;border-radius:20px;overflow:hidden}.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));border-radius:20px;width:0}.budget-meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:8px}.chart{height:175px;display:flex;align-items:end;gap:10px;padding:12px 3px 0}.bar-col{height:100%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:end;gap:8px;min-width:0}.bar-pair{height:140px;display:flex;align-items:end;gap:4px;width:100%;justify-content:center}.bar{width:min(25px,42%);border-radius:6px 6px 2px 2px;background:var(--primary2);min-height:2px}.bar.expense{background:#e5a4b4}.bar-label{font-size:11px;color:var(--muted)}.lower{grid-template-columns:1fr;margin-bottom:18px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;white-space:nowrap}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line)}th{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-weight:700}td{font-size:13px}tr:last-child td{border-bottom:0}.pill{display:inline-block;padding:4px 9px;border-radius:20px;font-size:11px;background:#f0efff;color:var(--primary)}.pill.expense{background:#fff0f3;color:var(--red)}.pill.income{background:#eaf8f2;color:var(--green)}.form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;color:var(--muted)}input,select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--text);outline:none}input:focus,select:focus{border-color:var(--primary2);box-shadow:0 0 0 3px #8a7cf322}.form-actions{display:flex;align-items:end;gap:10px}.empty{text-align:center;color:var(--muted);padding:28px}.footnote{font-size:12px;color:var(--muted);margin:14px 2px}.hidden{display:none!important}.installment-summary{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:12px}.installment-summary strong{color:var(--text);font-size:15px;display:block;margin-top:3px}.login-screen{position:fixed;inset:0;z-index:9999;background:#f7f6fc;display:flex;align-items:center;justify-content:center;padding:24px;font-family:Arial,sans-serif}.login-card{width:100%;max-width:390px;background:#fff;padding:32px;border-radius:18px;box-shadow:0 12px 40px #25204418}.login-card h2{margin-top:0;color:#34245c}.login-card p{color:#716b80}.login-card label{display:block}.login-card input{display:block;width:100%;padding:12px;margin:8px 0 18px;border:1px solid #ddd;border-radius:8px}.login-card button{width:100%;padding:13px}.login-message{font-size:14px;color:#b42318;overflow-wrap:anywhere}.sync-status{font-size:12px;color:#d2cfee;margin:12px 8px 0}.hidden-access{visibility:hidden}
+@media(max-width:1050px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.middle{grid-template-columns:1fr}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:720px){.app{grid-template-columns:1fr}.sidebar{padding:14px 16px}.brand{margin:0 0 10px}.nav-label,.sidebar-note{display:none}.navs{display:flex;gap:5px;overflow:auto}.nav{white-space:nowrap;margin:0;padding:8px 11px}.main{padding:19px 14px}.topbar{align-items:flex-start;flex-direction:column}.topbar h1{font-size:23px}.stats{gap:10px}.card{padding:16px}.stat-value{font-size:21px}.form-grid{grid-template-columns:1fr}.form-actions button{width:100%}.top-actions{width:100%}.top-actions button{flex:1}}
+
+.nav-count{color:#b9b0ff;font-weight:700}.capture-list{display:grid;gap:12px}.capture-item{border:1px solid var(--line);border-radius:14px;padding:16px}.capture-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}.capture-amount{font-size:20px;font-weight:800;letter-spacing:-.4px;white-space:nowrap}.debtors{display:grid;gap:10px;margin-top:10px}.debtors:empty{display:none}.debtor-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) auto;gap:10px;align-items:end;padding:10px;background:#f8f8fc;border-radius:12px}.debtor-row button.danger{padding:11px 13px}.capture-foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}.capture-summary{font-size:12px}.capture-actions{display:flex;gap:8px}.capture-actions button.danger{padding:11px 15px}.receivable-group{border:1px solid var(--line);border-radius:14px;padding:6px 14px 10px;margin-bottom:12px}.receivable-group:last-child{margin-bottom:0}.receivable-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0}.receivable-head strong{font-size:15px}.receivable-head .receivable-sum{font-weight:800}.receivable-group td{white-space:normal}
+@media(max-width:720px){.debtor-row{grid-template-columns:1fr auto}.debtor-row .field:first-child{grid-column:1/-1}.capture-actions{width:100%}.capture-actions button{flex:1}.receivable-head{flex-wrap:wrap}}
+.invoice-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px}.invoice-kicker{font-size:12px;color:var(--muted)}.invoice-head h2{font-size:22px;letter-spacing:-.5px;margin:2px 0}.invoice-nav{display:flex;gap:8px}.invoice-nav button{padding:8px 13px}.invoice-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:8px}.invoice-fact{background:#f8f8fc;border-radius:12px;padding:12px 14px}.invoice-fact>span{display:block;font-size:12px;color:var(--muted)}.invoice-fact strong{font-size:20px;letter-spacing:-.4px}.invoice-fact input{padding:5px 8px;margin-top:3px;max-width:170px}.invoice-block h3{font-size:14px;margin:26px 0 4px}.invoice-day{font-size:12px;color:var(--muted);font-weight:700;padding:14px 0 4px;border-bottom:1px solid var(--line)}.invoice-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line)}.invoice-row .desc{min-width:0;overflow-wrap:anywhere}.invoice-row .meta{font-size:12px;color:var(--muted)}.invoice-row .val{font-weight:700;white-space:nowrap;display:flex;align-items:center;gap:6px}.invoice-empty{color:var(--muted);font-size:13px;padding:10px 0}.icon-btn{background:transparent;color:var(--muted);padding:3px 7px;font-weight:400;border-radius:8px}.icon-btn:hover{color:var(--red);background:#fff0f3}.marca{background:#cfe6fb;padding:1px 5px;border-radius:3px;-webkit-box-decoration-break:clone;box-decoration-break:clone}.invoice-summary{margin-top:26px;border-top:2px solid var(--text);padding-top:8px}.sum-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:7px 0;font-size:14px}.sum-row .stat-foot{display:block}.sum-row.total{font-size:19px;font-weight:800;padding-top:14px;border-top:1px solid var(--line);margin-top:6px}.sum-row.total .val{color:var(--primary)}.invoice-hint{font-size:12px;color:var(--muted);margin-top:10px}
+@media(max-width:720px){.invoice-facts{grid-template-columns:1fr}.invoice-head{flex-wrap:wrap}}
+.form-msg{font-size:13px;color:var(--green);margin:12px 0 0;min-height:1em}.inst-acc{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:#f0efff;color:var(--primary);margin-left:6px}
+.renda{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:18px}.renda .stat-value{margin:6px 0 2px}.inline-edit{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}.inline-edit input{max-width:170px;padding:8px 10px}.inline-edit button{padding:8px 13px}.renda-line{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:6px 0;border-top:1px dashed var(--line);margin-top:10px}
+@media(max-width:720px){.renda{grid-template-columns:1fr}}
+.tx-split{grid-column:1/-1}.tx-split .capture-foot{margin-top:4px}.split-editor{background:#f8f8fc;border-radius:12px;padding:12px;margin:6px 0 10px}.split-editor .form-grid{grid-template-columns:repeat(2,minmax(0,220px))}.extrato-totais{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:8px}.link-btn{background:transparent;color:var(--primary);padding:3px 6px;font-weight:650;font-size:12px}.link-btn:hover{background:#f0efff}
+@media(max-width:720px){.extrato-totais{grid-template-columns:1fr}.invoice-nav{flex-wrap:wrap}}
+.env-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.env{border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:6px}.env h3{font-size:14px;margin:0}.env .env-today{font-size:12px;color:var(--muted);margin-top:4px}.env .env-big{font-size:26px;font-weight:800;letter-spacing:-.6px}.env-bar{height:8px;background:#ececf6;border-radius:99px;overflow:hidden;margin:6px 0 4px}.env-bar span{display:block;height:100%;background:var(--primary);border-radius:99px}.env-bar.over span{background:var(--red)}.env-line{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:3px 0}.env-line strong{white-space:nowrap}.env-note{font-size:12px;color:var(--muted);margin-top:4px}.env .inline-edit{margin-top:8px}
+@media(max-width:980px){.env-grid{grid-template-columns:1fr}}
+.pode-gastar{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}.pode-gastar h3{font-size:14px;margin:0}.pode-gastar select{width:auto}.pg-result{margin-top:12px;padding:12px 14px;border-radius:12px;font-size:14px;line-height:1.5}.pg-result strong{display:block;font-size:16px;margin-bottom:2px}.pg-sim{background:#e7f8ef;color:#0f6b43}.pg-cuidado{background:#fff6e0;color:#7a5600}.pg-nao{background:#ffecef;color:#a3122e}
+.nav{display:flex;align-items:center;gap:10px}.nav-ic{width:16px;text-align:center}.nav-more{display:none}.more-sheet{display:none}button.nav{width:100%;background:transparent;color:#dedcf2;font:inherit;font-weight:400;text-align:left;cursor:pointer}
+@media(max-width:720px){
+ input,select,textarea{font-size:16px}
+ .app{display:block}
+ .main{padding:16px 14px calc(92px + env(safe-area-inset-bottom));padding-top:calc(16px + env(safe-area-inset-top))}
+ .top-actions{display:none}
+ .sidebar{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:40;padding:6px 6px calc(6px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.08);box-shadow:0 -8px 24px rgba(20,18,45,.18)}
+ .brand,.nav-label,.sidebar-note,.sync-status,#logoutBtn,.nav-sec{display:none!important}
+ .navs{display:grid!important;grid-template-columns:repeat(5,1fr);gap:2px;overflow:visible}
+ .nav,.nav-more{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:7px 2px!important;margin:0;font-size:11px;line-height:1.2;border-radius:10px;text-align:center;white-space:nowrap}
+ .navs .nav.nav-sec{display:none!important}
+ .navs button.nav-more{font-size:11px;font-weight:400;line-height:1.2;font-family:inherit;border:0}
+ .nav-ic{font-size:18px;width:auto}
+ .nav .nav-count{display:none}
+ .nav-tx{position:relative}
+ .nav-badge{position:absolute;top:-24px;right:-12px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:#ff5d7a;color:#fff;font-size:10px;font-weight:700;line-height:16px}
+ .more-sheet{display:block;position:fixed;left:10px;right:10px;bottom:calc(76px + env(safe-area-inset-bottom));z-index:45;background:#fff;border-radius:16px;padding:8px;box-shadow:0 18px 50px rgba(20,18,45,.28)}
+ .more-sheet.hidden{display:none}
+ .sheet-link{display:block;width:100%;text-align:left;padding:13px 14px;border-radius:10px;color:var(--text);text-decoration:none;background:transparent;font:inherit;font-weight:600;border:0;cursor:pointer}
+ .sheet-link:active,.sheet-link:hover{background:#f0efff}
+ .sheet-status{font-size:12px;color:var(--muted);padding:6px 14px 4px}
+ .topbar{margin-bottom:16px}
+}
+</style>
+</head>
+<body>
+<div id="loginScreen" class="login-screen">
+  <form id="loginForm" class="login-card">
+    <h2>Seu dinheiro, com clareza.</h2>
+    <p>Entre para acessar seu controle financeiro.</p>
+    <label for="loginEmail">E-mail</label><input id="loginEmail" type="email" required autocomplete="username">
+    <label for="loginPassword">Senha</label><input id="loginPassword" type="password" required autocomplete="current-password">
+    <button id="loginButton" type="submit">Entrar</button>
+    <p id="loginMessage" class="login-message" role="status"></p>
+  </form>
+</div>
+<div class="app" id="appShell" style="visibility:hidden">
+  <aside class="sidebar">
+    <div class="brand">meu<span>controle</span>.</div><div class="nav-label">Visão geral</div>
+    <div class="navs"><a class="nav active" href="#painel" data-page="painel"><span class="nav-ic">▦</span><span class="nav-tx">Painel</span></a><a class="nav" href="#lancar" data-page="lancar"><span class="nav-ic">＋</span><span class="nav-tx">Lançamentos</span></a><a class="nav" href="#extrato" data-page="extrato"><span class="nav-ic">≡</span><span class="nav-tx">Extrato</span></a><a class="nav nav-sec" href="#orcamento" data-page="orcamento"><span class="nav-ic">◔</span><span class="nav-tx">Orçamento</span></a><a class="nav nav-sec" href="#pendentes" data-page="pendentes"><span class="nav-ic">◌</span><span class="nav-tx">Pendentes<span class="nav-count" id="navPendingCount"></span></span></a><a class="nav nav-sec" href="#receber" data-page="receber"><span class="nav-ic">⇄</span><span class="nav-tx">A receber</span></a><a class="nav" href="#fatura" data-page="fatura"><span class="nav-ic">▤</span><span class="nav-tx">Fatura</span></a><button type="button" class="nav nav-more" id="navMore" aria-expanded="false" aria-controls="moreSheet"><span class="nav-ic">⋯</span><span class="nav-tx">Mais<span class="nav-badge hidden" id="navMoreBadge"></span></span></button></div>
+    <div class="sidebar-note">Seus dados são sincronizados com sua conta. Mantenha seu acesso seguro.</div>
+    <div class="sync-status" id="syncStatus">Aguardando login…</div>
+    <button class="secondary" id="logoutBtn" style="margin:14px 8px 0">Sair da conta</button>
+  </aside>
+  <div class="more-sheet hidden" id="moreSheet" role="dialog" aria-label="Mais opções">
+    <a class="sheet-link" href="#orcamento">◔ &nbsp; Orçamento</a>
+    <a class="sheet-link" href="#pendentes">◌ &nbsp; Pendentes<span class="nav-count" id="sheetPendingCount"></span></a>
+    <a class="sheet-link" href="#receber">⇄ &nbsp; A receber</a>
+    <button type="button" class="sheet-link" id="sheetExport">⇩ &nbsp; Exportar backup</button>
+    <button type="button" class="sheet-link" id="sheetLogout">⎋ &nbsp; Sair da conta</button>
+    <div class="sheet-status" id="sheetStatus"></div>
+  </div>
+  <main class="main" id="inicio">
+    <header class="topbar"><div><div class="eyebrow" id="todayLabel">Seu resumo financeiro</div><h1 id="pageTitle">Seu dinheiro, com clareza.</h1></div><div class="top-actions"><button class="secondary" id="exportBtn">Exportar backup</button><button id="newTransactionBtn">+ Novo lançamento</button></div></header>
+    <section class="grid stats" data-pages="painel">
+      <article class="card"><span class="stat-icon">◈</span><div class="stat-label">Saldo do mês</div><div class="stat-value" id="statBalance">R$ 0,00</div><div class="stat-foot">Receitas menos despesas registradas</div></article>
+      <article class="card"><span class="stat-icon">↗</span><div class="stat-label">Receitas do mês</div><div class="stat-value green" id="statIncome">R$ 0,00</div><div class="stat-foot">Entradas registradas neste mês</div></article>
+      <article class="card"><span class="stat-icon">↘</span><div class="stat-label">Seus gastos na fatura</div><div class="stat-value red" id="statExpenses">R$ 0,00</div><div class="stat-foot" id="statExpensesFoot">Sua parte das compras e parcelas do ciclo atual</div></article>
+      <article class="card"><span class="stat-icon">▤</span><div class="stat-label">Parcelas futuras</div><div class="stat-value" id="statInstallments">R$ 0,00</div><div class="stat-foot">Soma mensal das parcelas ativas</div></article>
+    </section>
+    <section class="grid renda" data-pages="painel">
+      <article class="card" id="saldoCard"></article>
+      <article class="card" id="salarioCard"></article>
+    </section>
+    <section class="card lower" id="orcamento" data-pages="painel orcamento">
+      <div class="section-head"><div><h2>Quanto posso gastar</h2><p id="orcCiclo"></p></div></div>
+      <div class="grid env-grid" id="orcBody"></div>
+      <div class="pode-gastar">
+        <h3>Posso gastar?</h3>
+        <div class="inline-edit"><input id="pgValor" type="number" min="0.01" step="0.01" placeholder="Valor (R$)" aria-label="Valor do gasto"><select id="pgCat" aria-label="Tipo de gasto"><option>Lazer</option><option>Alimentação</option><option>Outro</option></select><button type="button" id="pgBtn">Verificar</button></div>
+        <div id="pgResult" role="status"></div>
+      </div>
+    </section>
+    <section class="card lower" id="pendentes" data-pages="painel pendentes"><div class="section-head"><div><h2>Compras pendentes</h2><p>Capturadas pelo iPhone. Informe sua parte e quem te deve; ao classificar, a compra vira transação.</p></div><button class="secondary" id="refreshExtrasBtn" type="button">Atualizar</button></div><div id="pendingList" class="capture-list"></div><div class="empty hidden" id="emptyPending">Nenhuma compra pendente.</div><datalist id="peopleList"></datalist></section>
+    <section class="card lower" id="receber" data-pages="painel receber"><div class="section-head"><div><h2>A receber</h2><p>Valores em aberto que outras pessoas te devem.</p></div><span class="pill" id="receivableTotal">R$ 0,00</span></div><div id="receivableList"></div><div class="empty hidden" id="emptyReceivables">Ninguém te deve nada no momento.</div></section>
+    <section class="card lower invoice" id="fatura" data-pages="painel fatura">
+      <div class="invoice-head"><div><div class="invoice-kicker">Cartão da mãe — Visa Infinite</div><h2 id="faturaTitulo">Fatura</h2><p class="stat-foot" id="faturaCiclo"></p></div><div class="invoice-nav"><button type="button" class="secondary" id="faturaPrev" aria-label="Fatura anterior">‹</button><button type="button" class="secondary" id="faturaNext" aria-label="Próxima fatura">›</button></div></div>
+      <div id="faturaBody"></div>
+    </section>
+    <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Gasto ou recebimento</h2><p>Compras feitas fora do iPhone, receitas e o VR.</p></div></div>
+      <form id="transactionForm" class="form-grid"><div class="field"><label for="descricao">Descrição</label><input id="descricao" required maxlength="100" placeholder="Ex.: mercado, transporte..."></div><div class="field"><label for="valor">Valor total (R$)</label><input id="valor" type="number" min="0.01" step="0.01" required placeholder="0,00"></div><div class="field"><label for="tipo">Tipo</label><select id="tipo"><option value="expense">Despesa</option><option value="income">Receita</option></select></div><div class="field"><label for="categoria">Categoria</label><select id="categoria"><option>Alimentação</option><option>Transporte</option><option>Moradia</option><option>Faculdade</option><option>Saúde</option><option>Lazer</option><option>Assinaturas</option><option>Salário</option><option>VR</option><option>Pix / transferência</option><option>Compras</option><option>Outros</option></select></div><div class="field"><label for="data">Data</label><input id="data" type="date" required></div><div class="field"><label for="divisao">Sua parte (R$; opcional)</label><input id="divisao" type="number" min="0" step="0.01" placeholder="Se dividir, informe sua parte"></div><div class="field"><label for="cartao">Conta / cartão (opcional)</label><select id="cartao"><option value="">Não informado</option><option>Conta corrente</option><option value="Visa Infinite Principal">Cartão da mãe (Visa Infinite)</option><option>Bradesco</option><option>Itaú</option><option>Nubank</option><option>Dinheiro</option><option>Outro</option></select></div><div class="tx-split"><div class="debtors" id="txDebtors"></div><div class="capture-foot"><button type="button" class="secondary" id="txAddDebtor">+ Alguém me deve</button><span class="capture-summary" id="txSplitSummary"></span></div></div><div class="form-actions"><button type="submit">Salvar transação</button></div></form>
+      <p class="form-msg" id="txMsg" role="status"></p>
+    </section>
+    <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Parcelamento</h2><p>Informe a parcela que cai na fatura aberta; as demais são distribuídas nas faturas seguintes.</p></div></div>
+      <form id="installmentForm" class="form-grid"><div class="field"><label for="instName">Descrição</label><input id="instName" required maxlength="100" placeholder="Ex.: notebook"></div><div class="field"><label for="instValue">Valor da parcela (R$)</label><input id="instValue" type="number" min="0.01" step="0.01" required placeholder="0,00"></div><div class="field"><label for="instCurrent">Parcela na fatura aberta</label><input id="instCurrent" type="number" min="1" step="1" required value="1"></div><div class="field"><label for="instTotal">Total de parcelas</label><input id="instTotal" type="number" min="1" step="1" required placeholder="Ex.: 12"></div><div class="field"><label for="instAccount">Onde é cobrado</label><select id="instAccount"><option value="Cartão da mãe">Cartão da mãe</option><option value="Mãe">Por fora (direto para a mãe)</option><option value="Nubank">Nubank</option><option value="Outro">Outro</option></select></div><div class="form-actions"><button type="submit">Salvar parcelamento</button></div></form>
+      <p class="form-msg" id="instMsg" role="status"></p>
+    </section>
+    <section class="card lower invoice" id="extrato" data-pages="extrato">
+      <div class="invoice-head"><div><div class="invoice-kicker">Todas as contas</div><h2 id="extratoTitulo">Extrato</h2><p class="stat-foot" id="extratoCiclo"></p></div><div class="invoice-nav"><select id="extratoConta" aria-label="Filtrar por conta" style="width:auto"></select><button type="button" class="secondary" id="extratoPrev" aria-label="Período anterior">‹</button><button type="button" class="secondary" id="extratoNext" aria-label="Próximo período">›</button></div></div>
+      <div id="extratoBody"></div>
+    </section>
+    <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Últimos lançamentos</h2><p>Os 10 mais recentes, de todas as contas.</p></div></div><div id="recentList"></div></section>
+    <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Parcelamentos ativos</h2><p>De todas as contas, com a parcela da fatura aberta.</p></div></div><div id="activeInstList"></div></section>
+    <div class="footnote">Seus registros são sincronizados com o Supabase quando você está conectada. Use Exportar backup para guardar uma cópia.</div>
+  </main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// Configuração do projeto Supabase
+const SUPABASE_URL = 'https://vrzomioekicmkqltjlfs.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_dAgI-SWNCs9A8rXFafGQ8Q_eHR0_VKI';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+const STORAGE_KEY = 'meuControleFinanceiro_v1';
+const money = n => Number(n || 0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+const monthKey = d => String(d || '').slice(0,7);
+const today = new Date();
+const localDate = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const currentMonth = localDate(today).slice(0,7);
+let state = {transactions:[], installments:[], budgets:{}};
+try { const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); if(saved && typeof saved === 'object') state = {...state, ...saved}; } catch(e) { console.warn('Não foi possível ler o armazenamento local.', e); }
+const $ = id => document.getElementById(id);
+$('todayLabel').textContent = today.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+$('data').value = localDate(today);
+function saveLocal(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+function setStatus(message){ $('syncStatus').textContent = message; }
+function safe(s){ return String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function transactionToDb(t,userId){ return {id:t.id,user_id:userId,description:t.description,amount:t.amount,my_share:t.share ?? null,type:t.type,category:t.category || 'Outros',transaction_date:t.date,account:t.account || null}; }
+function transactionFromDb(t){ return {id:t.id,description:t.description,amount:Number(t.amount),share:t.my_share == null ? null : Number(t.my_share),type:t.type,category:t.category || 'Outros',date:t.transaction_date,account:t.account || ''}; }
+function installmentToDb(i,userId){ return {id:i.id,user_id:userId,description:i.name,installment_amount:i.amount,total_installments:i.total??null,current_installment:i.current??null,start_date:i.startMonth?`${i.startMonth}-01`:null,end_date:`${i.endMonth}-01`,account:i.account||null}; }
+function installmentFromDb(i){ return {id:i.id,name:i.description,amount:Number(i.installment_amount),endMonth:String(i.end_date || localDate(today)).slice(0,7),startMonth:i.start_date?String(i.start_date).slice(0,7):null,account:i.account||'',total:i.total_installments??null,current:i.current_installment??null}; }
+async function syncTransactionToSupabase(t){
+ const {data:{session},error:sessionError}=await supabaseClient.auth.getSession(); if(sessionError) throw sessionError; if(!session) return false;
+ const {error}=await supabaseClient.from('transactions').upsert(transactionToDb(t,session.user.id),{onConflict:'id'}); if(error) throw error; return true;
+}
+async function syncInstallmentToSupabase(i){
+ const {data:{session},error:sessionError}=await supabaseClient.auth.getSession(); if(sessionError) throw sessionError; if(!session) return false;
+ const {error}=await supabaseClient.from('installments').upsert(installmentToDb(i,session.user.id),{onConflict:'id'}); if(error) throw error; return true;
+}
+async function syncBudgetToSupabase(amount,month=currentMonth){
+ const {data:{session},error:sessionError}=await supabaseClient.auth.getSession(); if(sessionError) throw sessionError; if(!session) return false;
+ const {error}=await supabaseClient.from('budgets').upsert({user_id:session.user.id,category:'Geral',month:`${month}-01`,limit_amount:Number(amount)||0},{onConflict:'user_id,category,month'}); if(error) throw error; return true;
+}
+async function carregarDadosDaNuvem(session){
+ setStatus('Sincronizando dados…');
+ const userId=session.user.id;
+ const [trRes,inRes,buRes]=await Promise.all([
+   supabaseClient.from('transactions').select('*').eq('user_id',userId),
+   supabaseClient.from('installments').select('*').eq('user_id',userId),
+   supabaseClient.from('budgets').select('*').eq('user_id',userId)
+ ]);
+ if(trRes.error) throw trRes.error; if(inRes.error) throw inRes.error; if(buRes.error) throw buRes.error;
+ const cloudTransactions=trRes.data.map(transactionFromDb);
+ const cloudInstallments=inRes.data.map(installmentFromDb);
+ // Mescla registros locais ainda não presentes na nuvem, preservando o que já existe no banco.
+ const cloudTransactionIds=new Set(cloudTransactions.map(t=>t.id));
+ const localOnlyTransactions=state.transactions.filter(t=>!cloudTransactionIds.has(t.id));
+ const cloudInstallmentIds=new Set(cloudInstallments.map(i=>i.id));
+ const localOnlyInstallments=state.installments.filter(i=>!cloudInstallmentIds.has(i.id));
+ for(const t of localOnlyTransactions){ await supabaseClient.from('transactions').upsert(transactionToDb(t,userId),{onConflict:'id'}).then(({error})=>{if(error)throw error;}); }
+ for(const i of localOnlyInstallments){ await supabaseClient.from('installments').upsert(installmentToDb(i,userId),{onConflict:'id'}).then(({error})=>{if(error)throw error;}); }
+ state.transactions=[...cloudTransactions,...localOnlyTransactions];
+ state.installments=[...cloudInstallments,...localOnlyInstallments];
+ const cloudBudgets={};
+ for(const b of buRes.data){ if(b.category==='Geral' && b.month) cloudBudgets[String(b.month).slice(0,7)]=Number(b.limit_amount); }
+ // Mantém valores locais para meses sem orçamento salvo na nuvem e envia o orçamento do mês atual se necessário.
+ state.budgets={...state.budgets,...cloudBudgets};
+ if(cloudBudgets[currentMonth]===undefined && Number(state.budgets[currentMonth]||0)>0){ await syncBudgetToSupabase(state.budgets[currentMonth],currentMonth); }
+ saveLocal(); render(); setStatus('Sincronizado com a nuvem');
+}
+function renderStats(){
+ const ts=state.transactions.filter(t=>monthKey(t.date)===currentMonth);
+ const income=ts.filter(t=>t.type==='income').reduce((s,t)=>s+Number(t.share ?? t.amount),0);
+ const expense=ts.filter(t=>t.type==='expense').reduce((s,t)=>s+Number(t.share ?? t.amount),0);
+ const installments=state.installments.filter(i=>i.endMonth>=currentMonth).reduce((s,i)=>s+Number(i.amount),0);
+ $('statBalance').textContent=money(income-expense); $('statIncome').textContent=money(income); $('statInstallments').textContent=money(installments);
+ // Seus gastos: sua parte de todas as despesas (qualquer conta) dentro do ciclo da fatura aberta.
+ const venc = faturaAberta(), {ini, fim} = cicloDaFatura(venc);
+ const noCiclo = d => d >= ini && d <= fim;
+ const meus = state.transactions.filter(t => t.type === 'expense' && noCiclo(t.date)).reduce((s, t) => s + Number(t.share ?? t.amount), 0);
+ // Parcelas de todas as contas que caem nesta fatura (inclui as pagas por fora à mãe).
+ const parc = state.installments.filter(i => parcelaNaFatura(i, venc)).reduce((s, i) => s + Number(i.amount), 0);
+ const pend = extra.captures.filter(c => c.amount != null && noCiclo(dataSP(c.captured_at)));
+ $('statExpenses').textContent = money(meus + parc);
+ $('statExpensesFoot').textContent = `Compras de ${fmtCurta(ini)} a ${fmtCurta(fim)}: ${money(meus)} + parcelas: ${money(parc)}` + (pend.length ? `; fora ${pend.length} pendente${pend.length > 1 ? 's' : ''} (${money(pend.reduce((s, c) => s + c.amount, 0))})` : '');
+}
+function render(){renderStats();renderRenda();renderOrcamento();renderFatura();renderLancamentos();renderExtrato();}
+function atualizarAcesso(session){$('loginScreen').style.display=session?'none':'flex';$('appShell').style.visibility=session?'visible':'hidden';if(!session)setStatus('Entre para sincronizar seus dados.');}
+let activeUserId=null; let loadingUserId=null;
+async function handleSession(session){atualizarAcesso(session);if(!session){activeUserId=null;return;}if(loadingUserId===session.user.id || activeUserId===session.user.id)return;loadingUserId=session.user.id;try{await carregarDadosDaNuvem(session);activeUserId=session.user.id;await carregarExtras();}catch(error){setStatus('Erro ao sincronizar');console.error('Erro ao carregar dados do Supabase:',error.message);$('loginMessage').textContent='Login realizado, mas houve erro ao carregar os dados: '+error.message;}finally{loadingUserId=null;}}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginButton').disabled=true;$('loginButton').textContent='Entrando…';$('loginMessage').textContent='';try{const {data,error}=await supabaseClient.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error)throw error;atualizarAcesso(data.session);await handleSession(data.session);$('loginMessage').textContent='';}catch(error){$('loginMessage').textContent=error.message==='Invalid login credentials'?'E-mail ou senha incorretos.':'Não foi possível entrar: '+error.message;}finally{$('loginButton').disabled=false;$('loginButton').textContent='Entrar';}});
+supabaseClient.auth.onAuthStateChange((_event,session)=>{setTimeout(()=>{void handleSession(session);},0);});
+supabaseClient.auth.getSession().then(({data,error})=>{if(error){console.error('Erro ao verificar sessão:',error.message);$('loginMessage').textContent='Não foi possível verificar a sessão.';return;}void handleSession(data.session);});
+$('logoutBtn').addEventListener('click',async()=>{const {error}=await supabaseClient.auth.signOut();if(error){alert('Não foi possível sair: '+error.message);return;}activeUserId=null;limparExtras();atualizarAcesso(null);$('loginPassword').value='';});
+document.addEventListener('click',async e=>{const td=e.target.closest('[data-delete-transaction]');if(td){const id=td.dataset.deleteTransaction;if(!confirm('Excluir esta transação?'))return;state.transactions=state.transactions.filter(t=>t.id!==id);saveLocal();render();try{const {data:{session}}=await supabaseClient.auth.getSession();if(session){const {error}=await supabaseClient.from('transactions').delete().eq('id',id).eq('user_id',session.user.id);if(error)throw error;}setStatus('Transação excluída');}catch(error){console.error('Erro ao excluir transação:',error.message);alert('Foi removida do painel, mas houve erro ao excluir da nuvem: '+error.message);}return;}const ins=e.target.closest('[data-delete-installment]');if(ins){const id=ins.dataset.deleteInstallment;if(!confirm('Excluir esta parcela?'))return;state.installments=state.installments.filter(i=>i.id!==id);saveLocal();render();try{const {data:{session}}=await supabaseClient.auth.getSession();if(session){const {error}=await supabaseClient.from('installments').delete().eq('id',id).eq('user_id',session.user.id);if(error)throw error;}setStatus('Parcela excluída');}catch(error){console.error('Erro ao excluir parcela:',error.message);alert('Foi removida do painel, mas houve erro ao excluir da nuvem: '+error.message);}}});
+$('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='backup-controle-financeiro.json';a.click();URL.revokeObjectURL(url);});
+$('newTransactionBtn').addEventListener('click',()=>abrirLancamento('tx'));
+// ===== Capturas pendentes (iPhone) e valores a receber =====
+// Mantidos fora de `state` para não irem ao localStorage nem ao backup local: a fonte é sempre o Supabase.
+let extra = {captures:[], receivables:[], people:[], closings:{}, balance:null, envelopes:{}};
+const round2 = n => Math.round((Number(n) || 0) * 100) / 100;
+const fmtDateTime = iso => new Date(iso).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+const fmtDate = iso => new Date(iso).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'});
+const capById = id => extra.captures.find(c => c.id === id);
+
+function limparExtras(){ extra = {captures:[], receivables:[], people:[], closings:{}, balance:null, envelopes:{}}; renderPending(); renderReceivables(); }
+
+async function carregarExtras(){ await Promise.all([carregarPendentes(), carregarRecebiveis(), carregarFechamentos(), carregarSaldo()]); await garantirSalarios(); }
+async function carregarFechamentos(){
+ const {data,error} = await supabaseClient.from('card_closings').select('invoice_month,closing_date');
+ if(error){ console.error('Erro ao carregar fechamentos:', error.message); return; }
+ extra.closings = Object.fromEntries(data.map(r => [String(r.invoice_month).slice(0,7), String(r.closing_date).slice(0,10)]));
+ renderFatura();
+}
+
+async function carregarPendentes(){
+ const {data,error} = await supabaseClient.from('capture_inbox')
+   .select('id,captured_at,merchant,card,amount,status')
+   .eq('status','pending').order('captured_at',{ascending:false});
+ if(error){ console.error('Erro ao carregar pendentes:', error.message); setStatus('Erro ao carregar pendentes'); return; }
+ extra.captures = data.map(c => ({...c, amount: c.amount == null ? null : Number(c.amount)}));
+ renderPending(); renderFatura(); renderStats();
+}
+
+async function carregarRecebiveis(){
+ const [rRes, pRes] = await Promise.all([
+   supabaseClient.from('receivables').select('id,description,amount,status,created_at,person_id,transaction_id,people(name)').eq('status','open').order('created_at',{ascending:false}),
+   supabaseClient.from('people').select('id,name').order('name')
+ ]);
+ if(rRes.error){ console.error('Erro ao carregar valores a receber:', rRes.error.message); setStatus('Erro ao carregar valores a receber'); return; }
+ if(pRes.error){ console.error('Erro ao carregar pessoas:', pRes.error.message); }
+ extra.receivables = rRes.data.map(r => ({...r, amount:Number(r.amount), personName: r.people?.name || '—'}));
+ extra.people = pRes.data || [];
+ $('peopleList').innerHTML = extra.people.map(p => `<option value="${safe(p.name)}"></option>`).join('');
+ renderReceivables(); renderExtrato(); renderFatura();
+}
+
+// Sugere a categoria usada da última vez para a mesma descrição.
+function guessCategory(merchant){
+ const key = String(merchant || '').trim().toLowerCase();
+ if(!key) return 'Outros';
+ const hit = [...state.transactions].filter(t => String(t.description || '').trim().toLowerCase() === key).sort((a,b) => b.date.localeCompare(a.date))[0];
+ return hit ? hit.category : 'Outros';
+}
+
+function debtorRowHtml(amount){
+ return `<div class="debtor-row"><div class="field"><label>Pessoa</label><input data-f="dname" list="peopleList" maxlength="60" placeholder="Nome de quem te deve" autocomplete="off"></div><div class="field"><label>Valor que deve (R$)</label><input data-f="damount" type="number" min="0.01" step="0.01" value="${amount > 0 ? amount.toFixed(2) : ''}"></div><button type="button" class="danger" data-remove-debtor aria-label="Remover pessoa">✕</button></div>`;
+}
+
+function renderPending(){
+ const list = $('pendingList'), caps = extra.captures;
+ $('emptyPending').classList.toggle('hidden', caps.length > 0);
+ $('navPendingCount').textContent = caps.length ? ` (${caps.length})` : '';
+ const cats = [...$('categoria').options].map(o => o.value);
+ list.innerHTML = caps.map(c => {
+   const hasAmount = c.amount != null;
+   const cat = guessCategory(c.merchant);
+   const head = `<div class="capture-head"><div><strong>${safe(c.merchant || 'Estabelecimento não informado')}</strong><div class="stat-foot">${fmtDateTime(c.captured_at)} — ${safe(c.card || 'cartão não informado')}</div></div><div class="capture-amount">${hasAmount ? money(c.amount) : '<span class="red">sem valor</span>'}</div></div>`;
+   if(!hasAmount) return `<article class="capture-item" data-cap="${safe(c.id)}">${head}<div class="capture-foot"><span class="stat-foot">O iPhone não enviou o valor desta compra. Descarte e registre manualmente em "Registrar uma transação".</span><div class="capture-actions"><button type="button" class="danger" data-discard>Descartar</button></div></div></article>`;
+   return `<article class="capture-item" data-cap="${safe(c.id)}">${head}
+     <div class="form-grid">
+       <div class="field"><label>Descrição</label><input data-f="desc" maxlength="100" value="${safe(c.merchant || '')}"></div>
+       <div class="field"><label>Categoria</label><select data-f="cat">${cats.map(o => `<option${o === cat ? ' selected' : ''}>${safe(o)}</option>`).join('')}</select></div>
+       <div class="field"><label>Sua parte (R$)</label><input data-f="share" type="number" min="0" step="0.01" value="${c.amount.toFixed(2)}"></div>
+       <div class="form-actions"><button type="button" class="secondary" data-add-debtor>+ Alguém me deve</button></div>
+     </div>
+     <div class="debtors"></div>
+     <div class="capture-foot"><span class="capture-summary"></span><div class="capture-actions"><button type="button" class="danger" data-discard>Descartar</button><button type="button" data-classify>Classificar</button></div></div>
+   </article>`;
+ }).join('');
+ list.querySelectorAll('.capture-item').forEach(updateSummary);
+}
+
+function readCapture(item){
+ const cap = capById(item.dataset.cap);
+ const shareRaw = item.querySelector('[data-f=share]').value;
+ return {
+   cap,
+   total: Number(cap.amount),
+   share: shareRaw === '' ? NaN : Number(shareRaw),
+   debtors: [...item.querySelectorAll('.debtor-row')].map(r => ({name:r.querySelector('[data-f=dname]').value.trim(), amount:Number(r.querySelector('[data-f=damount]').value)}))
+ };
+}
+
+function updateSummary(item){
+ const el = item.querySelector('.capture-summary'); if(!el) return;
+ const {total, share, debtors} = readCapture(item);
+ const owed = round2(debtors.reduce((s,d) => s + (d.amount > 0 ? d.amount : 0), 0));
+ const rest = round2(total - (Number.isFinite(share) ? share : 0) - owed);
+ let msg = `Sua parte ${money(Number.isFinite(share) ? share : 0)} + a receber ${money(owed)}`;
+ let cls = 'stat-foot';
+ if(rest < 0){ msg += ` — passa do total em ${money(-rest)}`; cls = 'red'; }
+ else if(rest > 0){ msg += ` — ${money(rest)} sem atribuição`; }
+ else { msg += ' = total da compra'; }
+ el.className = 'capture-summary ' + cls; el.textContent = msg;
+}
+
+function validarCaptura({total, share, debtors}){
+ if(!Number.isFinite(share) || share < 0) return 'Informe sua parte (use 0 se a compra foi inteira para outra pessoa).';
+ if(share > total + 0.004) return 'Sua parte não pode ser maior que o total da compra.';
+ for(const d of debtors){
+   if(!d.name) return 'Preencha o nome de cada pessoa ou remova a linha vazia.';
+   if(!(d.amount > 0)) return `Informe um valor maior que zero para ${d.name}.`;
+ }
+ const names = debtors.map(d => d.name.toLowerCase());
+ if(new Set(names).size !== names.length) return 'A mesma pessoa aparece duas vezes. Some os valores em uma linha só.';
+ if(round2(share + debtors.reduce((s,d) => s + d.amount, 0)) > round2(total)) return 'Sua parte somada aos valores a receber passa do total da compra.';
+ return null;
+}
+
+function removerCapturaDaTela(item, id){
+ extra.captures = extra.captures.filter(c => c.id !== id);
+ item.remove();
+ $('emptyPending').classList.toggle('hidden', extra.captures.length > 0);
+ $('navPendingCount').textContent = extra.captures.length ? ` (${extra.captures.length})` : '';
+ renderFatura(); renderStats();
+}
+
+async function classificarCaptura(item, btn){
+ const data = readCapture(item);
+ const erro = validarCaptura(data);
+ if(erro){ alert(erro); return; }
+ btn.disabled = true; btn.textContent = 'Classificando…';
+ const {error} = await supabaseClient.rpc('classify_capture', {
+   p_capture_id: data.cap.id,
+   p_my_share: round2(data.share),
+   p_category: item.querySelector('[data-f=cat]').value,
+   p_description: item.querySelector('[data-f=desc]').value.trim(),
+   p_debtors: data.debtors.map(d => ({name:d.name, amount:round2(d.amount)}))
+ });
+ if(error){
+   console.error('Erro ao classificar:', error.message);
+   alert('Não foi possível classificar: ' + error.message);
+   btn.disabled = false; btn.textContent = 'Classificar'; return;
+ }
+ removerCapturaDaTela(item, data.cap.id);
+ setStatus('Compra classificada');
+ try{ const {data:{session}} = await supabaseClient.auth.getSession(); if(session) await carregarDadosDaNuvem(session); }catch(e){ console.error('Erro ao recarregar transações:', e.message); }
+ await carregarRecebiveis();
+}
+
+async function descartarCaptura(item, btn){
+ const cap = capById(item.dataset.cap);
+ if(!confirm(`Descartar a compra "${cap.merchant || 'sem nome'}"? Ela não vira transação.`)) return;
+ btn.disabled = true;
+ const {error} = await supabaseClient.from('capture_inbox').update({status:'discarded'}).eq('id', cap.id);
+ if(error){ console.error('Erro ao descartar:', error.message); alert('Não foi possível descartar: ' + error.message); btn.disabled = false; return; }
+ removerCapturaDaTela(item, cap.id);
+ setStatus('Compra descartada');
+}
+
+function renderReceivables(){
+ // O que a mãe deve não aparece aqui: é compensado direto no Pix da fatura.
+ const list = $('receivableList'), open = extra.receivables.filter(r => !ehMae(r.personName));
+ $('emptyReceivables').classList.toggle('hidden', open.length > 0);
+ $('receivableTotal').textContent = money(open.reduce((s,r) => s + r.amount, 0));
+ const groups = new Map();
+ for(const r of open){
+   if(!groups.has(r.person_id)) groups.set(r.person_id, {name:r.personName, items:[], total:0});
+   const g = groups.get(r.person_id); g.items.push(r); g.total += r.amount;
+ }
+ list.innerHTML = [...groups.values()].sort((a,b) => b.total - a.total).map(g => `
+   <div class="receivable-group">
+     <div class="receivable-head"><div><strong>${safe(g.name)}</strong><div class="stat-foot">${g.items.length} ${g.items.length === 1 ? 'valor em aberto' : 'valores em aberto'}</div></div><div style="display:flex;align-items:center;gap:10px"><span class="receivable-sum green">${money(g.total)}</span><button type="button" class="secondary" data-paid="${g.items.map(i => safe(i.id)).join(',')}">Recebi tudo</button></div></div>
+     <div class="table-wrap"><table><tbody>${g.items.map(i => `<tr><td>${safe(i.description)}</td><td>${fmtDate(i.created_at)}</td><td><strong>${money(i.amount)}</strong></td><td style="text-align:right"><button type="button" class="secondary" data-paid="${safe(i.id)}">Recebi</button></td></tr>`).join('')}</tbody></table></div>
+   </div>`).join('');
+}
+
+async function marcarRecebido(ids, btn){
+ const itens = extra.receivables.filter(r => ids.includes(r.id));
+ const total = itens.reduce((s,r) => s + r.amount, 0);
+ if(!confirm(`Marcar ${money(total)} de ${itens[0]?.personName || 'esta pessoa'} como recebido?`)) return;
+ btn.disabled = true;
+ const {error} = await supabaseClient.from('receivables').update({status:'paid', paid_at:new Date().toISOString()}).in('id', ids);
+ if(error){ console.error('Erro ao marcar como recebido:', error.message); alert('Não foi possível atualizar: ' + error.message); btn.disabled = false; return; }
+ setStatus('Valor marcado como recebido');
+ await carregarRecebiveis();
+}
+
+$('pendingList').addEventListener('input', e => { const item = e.target.closest('.capture-item'); if(item) updateSummary(item); });
+$('pendingList').addEventListener('click', e => {
+ const item = e.target.closest('.capture-item'); if(!item) return;
+ const add = e.target.closest('[data-add-debtor]');
+ if(add){
+   const box = item.querySelector('.debtors'), shareInput = item.querySelector('[data-f=share]');
+   const {total, share, debtors} = readCapture(item);
+   let suggestion;
+   if(!debtors.length && Number.isFinite(share) && round2(share) === round2(total)){
+     // Primeira pessoa com a compra ainda inteira na sua parte: sugere dividir ao meio.
+     suggestion = round2(total / 2); shareInput.value = round2(total - suggestion).toFixed(2);
+   } else {
+     suggestion = round2(total - (Number.isFinite(share) ? share : 0) - debtors.reduce((s,d) => s + (d.amount > 0 ? d.amount : 0), 0));
+   }
+   box.insertAdjacentHTML('beforeend', debtorRowHtml(suggestion));
+   box.lastElementChild.querySelector('[data-f=dname]').focus();
+   updateSummary(item); return;
+ }
+ const rm = e.target.closest('[data-remove-debtor]');
+ if(rm){ rm.closest('.debtor-row').remove(); updateSummary(item); return; }
+ const cl = e.target.closest('[data-classify]');
+ if(cl){ void classificarCaptura(item, cl); return; }
+ const ds = e.target.closest('[data-discard]');
+ if(ds){ void descartarCaptura(item, ds); }
+});
+$('receivableList').addEventListener('click', e => { const b = e.target.closest('[data-paid]'); if(b) void marcarRecebido(b.dataset.paid.split(','), b); });
+$('refreshExtrasBtn').addEventListener('click', async e => { e.target.disabled = true; await carregarExtras(); e.target.disabled = false; setStatus('Pendências atualizadas'); });
+
+// ===== Acerto com a mãe =====
+// "Mãe", "mae", "MAE", "Mamãe", "minha mãe"… contam como a mesma pessoa para a compensação.
+const ehMae = nome => ['mae', 'mamae', 'minha mae'].includes(String(nome || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase());
+function dataDoRecebivel(r){ const t = r.transaction_id && state.transactions.find(x => x.id === r.transaction_id); return t ? t.date : dataSP(r.created_at); }
+// Regra: Pix = max(0, compras no cartão dela + parcelas do cartão dela − VR do ciclo) + parcelas fora do cartão.
+// A fatura é identificada pelo mês de vencimento; ela fecha no dia 29 do mês anterior.
+const CARTOES_DA_MAE = ['Visa Infinite Principal', 'Cartão da mãe'];
+const CONTAS_FORA_DO_CARTAO_MAE = ['Mãe'];
+const DIA_FECHAMENTO = 29;   // padrão; se cair no domingo, fecha no sábado (dia 28)
+const DIA_VENCIMENTO = 10;
+let acertoOffset = 0;
+
+function ymAdd(ym, n){ const [y,m] = ym.split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
+function diaSeguinte(iso){ const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + 1); return localDate(d); }
+// Fechamento padrão da fatura que vence no mês `venc`: dia 29 do mês anterior (domingo → sábado).
+function fechamentoPadrao(venc){
+ const ym = ymAdd(venc, -1), [y,m] = ym.split('-').map(Number);
+ const d = new Date(y, m - 1, Math.min(DIA_FECHAMENTO, new Date(y, m, 0).getDate()), 12);
+ if(d.getDay() === 0) d.setDate(d.getDate() - 1);
+ return localDate(d);
+}
+// Data informada (tabela card_closings) tem prioridade sobre o padrão.
+const fechamentoDaFatura = venc => extra.closings[venc] || fechamentoPadrao(venc);
+function faturaAberta(){ const hoje = localDate(today); let venc = currentMonth; for(let i = 0; i < 4 && fechamentoDaFatura(venc) < hoje; i++) venc = ymAdd(venc, 1); return venc; }
+function cicloDaFatura(venc){ return {ini: diaSeguinte(fechamentoDaFatura(ymAdd(venc, -1))), fim: fechamentoDaFatura(venc)}; }
+const dataSP = iso => new Date(iso).toLocaleDateString('en-CA', {timeZone:'America/Sao_Paulo'});
+const fmtCurta = iso => new Date(iso + 'T12:00:00').toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit'});
+const parcelaNaFatura = (i, venc) => i.endMonth >= venc && (!i.startMonth || i.startMonth <= venc);
+
+const fmtDiaFatura = iso => new Date(iso + 'T12:00:00').toLocaleDateString('pt-BR', {weekday:'short', day:'2-digit', month:'short'}).replace(/\./g, '');
+const mesesEntre = (a, b) => { const [ya,ma] = a.split('-').map(Number), [yb,mb] = b.split('-').map(Number); return (yb - ya) * 12 + (mb - ma); };
+function numeroParcela(i, venc){
+ if(!i.startMonth) return '';
+ const n = mesesEntre(i.startMonth, venc) + 1;
+ const total = i.total || (mesesEntre(i.startMonth, i.endMonth) + 1);
+ return `${n}/${total}`;
+}
+
+function renderFatura(){
+ if(!$('faturaBody')) return;
+ const venc = ymAdd(faturaAberta(), acertoOffset);
+ const {ini, fim} = cicloDaFatura(venc);
+ const noCiclo = d => d >= ini && d <= fim;
+ const nomeMes = new Date(venc + '-02T12:00:00').toLocaleDateString('pt-BR', {month:'long'});
+ const ano = venc.slice(0,4);
+ $('faturaTitulo').textContent = `Fatura de ${nomeMes}${ano !== String(today.getFullYear()) ? ' de ' + ano : ''}${acertoOffset === 0 ? ' (aberta)' : ''}`;
+ $('faturaCiclo').textContent = `Compras de ${fmtCurta(ini)} a ${fmtCurta(fim)}.`;
+
+ const compras = state.transactions.filter(t => t.type === 'expense' && CARTOES_DA_MAE.includes(t.account) && noCiclo(t.date))
+   .map(t => ({kind:'tx', id:t.id, date:t.date, desc:t.description, cat:t.category, amount:Number(t.amount), share:t.share}));
+ const pendentes = extra.captures.filter(c => c.amount != null && CARTOES_DA_MAE.includes(c.card) && noCiclo(dataSP(c.captured_at)))
+   .map(c => ({kind:'pend', id:c.id, date:dataSP(c.captured_at), desc:c.merchant || 'Sem nome', amount:c.amount}));
+ const lancamentos = [...compras, ...pendentes].sort((a,b) => a.date.localeCompare(b.date));
+ const parcCartao = state.installments.filter(i => CARTOES_DA_MAE.includes(i.account) && parcelaNaFatura(i, venc));
+ const parcFora = state.installments.filter(i => CONTAS_FORA_DO_CARTAO_MAE.includes(i.account) && parcelaNaFatura(i, venc));
+ const vrs = state.transactions.filter(t => t.type === 'income' && t.category === 'VR' && noCiclo(t.date));
+
+ const soma = (arr, f) => round2(arr.reduce((s, x) => s + Number(f(x)), 0));
+ const tCompras = soma(lancamentos, x => x.amount);
+ const tParcCartao = soma(parcCartao, i => i.amount), tFora = soma(parcFora, i => i.amount), tVR = soma(vrs, t => t.amount);
+ const tFatura = round2(tCompras + tParcCartao);
+ // O VR abate tudo o que é devido à mãe: fatura do cartão dela + parcelamentos por fora.
+ const devido = round2(tFatura + tFora);
+ // Compensação: o que a mãe te deve (valores em aberto até o fechamento) abate o Pix.
+ const recsMae = extra.receivables.filter(r => ehMae(r.personName) && dataDoRecebivel(r) <= fim);
+ const tMae = round2(recsMae.reduce((s, r) => s + r.amount, 0));
+ const saldo = round2(devido - tVR - tMae);
+ const pix = round2(Math.max(0, saldo));
+
+ // Compras agrupadas por dia
+ let dias = '', diaAtual = '';
+ for(const l of lancamentos){
+   if(l.date !== diaAtual){ diaAtual = l.date; dias += `<div class="invoice-day">${fmtDiaFatura(l.date)}</div>`; }
+   const meta = l.kind === 'pend'
+     ? '<span class="pill">pendente</span> <a href="#pendentes" class="meta">classificar</a>'
+     : `<span class="meta">${safe(l.cat)}${l.share != null && l.share < l.amount ? ` — sua parte ${money(l.share)}` : ''}</span>`;
+   const del = l.kind === 'tx' ? `<button type="button" class="icon-btn" data-delete-transaction="${safe(l.id)}" aria-label="Excluir compra">✕</button>` : '';
+   dias += `<div class="invoice-row"><div class="desc"><div>${safe(l.desc)}</div>${meta}</div><div class="val">${money(l.amount)}${del}</div></div>`;
+ }
+
+ const linhaParcela = (i, fora) => {
+   const desc = fora ? `<span class="marca">${safe(i.name)}</span>` : safe(i.name);
+   const val = fora ? `<span class="marca">${money(i.amount)}</span>` : money(i.amount);
+   const num = numeroParcela(i, venc);
+   return `<div class="invoice-row"><div class="desc"><div>${desc}</div><span class="meta">${num ? 'Parcela ' + num : ''}${fora ? (num ? ' — ' : '') + 'por fora, direto para a mãe' : ''}</span></div><div class="val">${val}<button type="button" class="icon-btn" data-delete-installment="${safe(i.id)}" aria-label="Excluir parcelamento">✕</button></div></div>`;
+ };
+ const parcelas = [...parcCartao.map(i => linhaParcela(i, false)), ...parcFora.map(i => linhaParcela(i, true))].join('');
+
+ const fechamentoInformado = Boolean(extra.closings[venc]);
+ $('faturaBody').innerHTML = `
+   <div class="invoice-facts">
+     <div class="invoice-fact"><span>Vencimento</span><strong>${String(DIA_VENCIMENTO).padStart(2,'0')}/${venc.slice(5,7)}</strong></div>
+     <div class="invoice-fact"><span>Fechamento${fechamentoInformado ? '' : ' (padrão)'}</span><input id="acertoFechamento" type="date" value="${fim}" data-venc="${venc}" aria-label="Data de fechamento"></div>
+     <div class="invoice-fact"><span>Total da fatura</span><strong>${money(tFatura)}</strong></div>
+   </div>
+   <div class="invoice-block"><h3>Compras</h3>${dias || '<div class="invoice-empty">Nenhuma compra neste ciclo.</div>'}</div>
+   <div class="invoice-block"><h3>Parcelamentos</h3>${parcelas || '<div class="invoice-empty">Nenhum parcelamento nesta fatura.</div>'}</div>
+   <div class="invoice-summary">
+     <div class="sum-row"><span>Total da fatura</span><span class="val">${money(tFatura)}</span></div>
+     <div class="sum-row"><span><span class="marca">Parcelamentos por fora</span></span><span class="val"><span class="marca">+ ${money(tFora)}</span></span></div>
+     <div class="sum-row"><span>VR do ciclo${vrs.length ? '' : ' <button type="button" class="secondary" data-register-vr style="padding:4px 10px;font-size:12px">Registrar VR</button>'}</span><span class="val">− ${money(tVR)}</span></div>
+     ${recsMae.length ? `<div class="sum-row"><span>Mãe te deve (${recsMae.length} ${recsMae.length === 1 ? 'item' : 'itens'})<span class="stat-foot">${recsMae.map(r => `${safe(r.description)} ${money(r.amount)}`).join(', ')}</span></span><span class="val">− ${money(tMae)}</span></div>` : ''}
+     <div class="sum-row total"><span>Pix para a mãe</span><span class="val">${money(pix)}</span></div>
+     ${recsMae.length ? `<div class="invoice-hint">Depois de fazer o Pix, marque a compensação como acertada para ela não ser descontada de novo na próxima fatura. <button type="button" class="link-btn" data-paid="${recsMae.map(r => safe(r.id)).join(',')}">Marcar compensação como acertada</button></div>` : ''}
+     ${saldo < 0 ? `<div class="sum-row"><span class="green">VR cobre tudo; sobra</span><span class="val green">${money(-saldo)}</span></div>` : ''}
+   </div>
+   ${pendentes.length ? '<div class="invoice-hint">Compras pendentes já entram no total pelo valor cheio.</div>' : ''}`;
+}
+
+// ===== Páginas (navegação lateral) =====
+const PAGINAS = {
+ painel:   'Seu dinheiro, com clareza.',
+ lancar:   'Lançamentos',
+ extrato:  'Extrato',
+ orcamento:'Orçamento',
+ pendentes:'Compras pendentes',
+ receber:  'A receber',
+ fatura:   'Fatura do cartão da mãe'
+};
+function irPara(pagina){
+ if(pagina === 'inicio' || !PAGINAS[pagina]) pagina = 'painel';
+ document.querySelectorAll('[data-pages]').forEach(s => s.classList.toggle('hidden', !s.dataset.pages.split(' ').includes(pagina)));
+ document.querySelectorAll('.nav[data-page]').forEach(a => a.classList.toggle('active', a.dataset.page === pagina));
+ $('pageTitle').textContent = PAGINAS[pagina];
+ $('newTransactionBtn').classList.toggle('hidden', pagina === 'lancar');
+ window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', () => irPara(location.hash.slice(1)));
+
+function abrirLancamento(aba, preset){
+ if(preset){ for(const [id, v] of Object.entries(preset)) $(id).value = v; }
+ if(location.hash !== '#lancar') location.hash = 'lancar'; else irPara('lancar');
+ const alvo = aba === 'inst' ? $('instName') : (preset?.valor === '' ? $('valor') : $('descricao'));
+ setTimeout(() => alvo.focus(), 0);
+}
+
+function renderLancamentos(){
+ if(!$('recentList')) return;
+ const recentes = [...state.transactions].sort((a,b) => b.date.localeCompare(a.date)).slice(0, 10);
+ $('recentList').innerHTML = recentes.length ? recentes.map(t => {
+   const conta = CARTOES_DA_MAE.includes(t.account) ? 'Cartão da mãe' : (t.account || 'Sem conta');
+   const sinal = t.type === 'income' ? '+' : '−';
+   return `<div class="invoice-row"><div class="desc"><div>${safe(t.description)}</div><span class="meta">${new Date(t.date + 'T12:00:00').toLocaleDateString('pt-BR')} — ${safe(t.category)} — ${safe(conta)}</span></div><div class="val"><button type="button" class="link-btn" data-edit-tx="${safe(t.id)}">Editar</button><span class="${t.type === 'income' ? 'green' : 'red'}">${sinal} ${money(t.amount)}</span><button type="button" class="icon-btn" data-delete-transaction="${safe(t.id)}" aria-label="Excluir lançamento">✕</button></div></div>${editorTx(t)}`;
+ }).join('') : '<div class="invoice-empty">Nenhum lançamento ainda.</div>';
+
+ const aberta = faturaAberta();
+ const ativos = state.installments.filter(i => i.endMonth >= aberta).sort((a,b) => a.endMonth.localeCompare(b.endMonth));
+ const nomeConta = a => a === 'Mãe' ? 'Por fora (mãe)' : (a || 'Sem conta');
+ $('activeInstList').innerHTML = ativos.length ? ativos.map(i => {
+   const num = (!i.startMonth || i.startMonth <= aberta) ? numeroParcela(i, aberta) : '';
+   const fim = new Date(i.endMonth + '-02T12:00:00').toLocaleDateString('pt-BR', {month:'short', year:'numeric'}).replace('.', '');
+   const nome = i.account === 'Mãe' ? `<span class="marca">${safe(i.name)}</span>` : safe(i.name);
+   return `<div class="invoice-row"><div class="desc"><div>${nome}<span class="inst-acc">${safe(nomeConta(i.account))}</span></div><span class="meta">${num ? 'Parcela ' + num + ' na fatura aberta — ' : ''}última em ${fim}</span></div><div class="val">${money(i.amount)}<button type="button" class="icon-btn" data-delete-installment="${safe(i.id)}" aria-label="Excluir parcelamento">✕</button></div></div>`;
+ }).join('') : '<div class="invoice-empty">Nenhum parcelamento ativo.</div>';
+}
+$('installmentForm').addEventListener('submit', async e => {
+ e.preventDefault();
+ const amount = Number($('instValue').value), atual = parseInt($('instCurrent').value, 10), total = parseInt($('instTotal').value, 10);
+ if(!(amount > 0) || !(total >= 1) || !(atual >= 1) || atual > total){ alert('Confira o valor e as parcelas: a parcela atual não pode ser maior que o total.'); return; }
+ const startMonth = ymAdd(faturaAberta(), -(atual - 1));
+ const installment = {id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), name: $('instName').value.trim(), amount, startMonth, endMonth: ymAdd(startMonth, total - 1), account: $('instAccount').value, total, current: atual};
+ state.installments.push(installment); saveLocal(); render();
+ try{ await syncInstallmentToSupabase(installment); setStatus('Parcelamento salvo na nuvem'); }
+ catch(error){ console.error('Erro ao salvar parcelamento:', error.message); setStatus('Erro ao salvar parcelamento na nuvem'); alert('O parcelamento ficou salvo neste navegador, mas não foi possível sincronizá-lo: ' + error.message); }
+ e.target.reset(); $('instCurrent').value = 1; $('instMsg').textContent = `Salvo: ${installment.name} — ${money(installment.amount)} por mês`;
+});
+$('faturaBody').addEventListener('click', e => {
+ const pg = e.target.closest('[data-paid]'); if(pg){ void marcarRecebido(pg.dataset.paid.split(','), pg); return; }
+ if(e.target.closest('[data-register-vr]')) abrirLancamento('tx', {descricao:'VR', valor:'', tipo:'income', categoria:'VR', cartao:'', divisao:'', data:localDate(today)});
+});
+$('faturaBody').addEventListener('change', async e => {
+ if(e.target.id !== 'acertoFechamento' || !e.target.value) return;
+ const venc = e.target.dataset.venc, data = e.target.value;
+ const {data:{session}} = await supabaseClient.auth.getSession(); if(!session) return;
+ const {error} = await supabaseClient.from('card_closings').upsert({user_id:session.user.id, invoice_month:`${venc}-01`, closing_date:data}, {onConflict:'user_id,invoice_month'});
+ if(error){ console.error('Erro ao salvar fechamento:', error.message); alert('Não foi possível salvar o fechamento: ' + error.message); return; }
+ extra.closings[venc] = data; setStatus('Fechamento da fatura salvo'); renderFatura();
+});
+$('faturaPrev').addEventListener('click', () => { acertoOffset--; renderFatura(); });
+$('faturaNext').addEventListener('click', () => { acertoOffset++; renderFatura(); });
+
+// ===== Saldo em conta e salário automático =====
+const CONTA_PRINCIPAL = 'Conta corrente';
+const DIARIA = 90;              // R$ por dia trabalhado (5x2: segunda a sexta)
+const SALARIO_DESDE = '2026-11'; // primeiro mês com lançamento automático
+
+// Feriados sem pagamento: nacionais + estadual de SP + municipais da cidade de São Paulo.
+// Carnaval não entra (é ponto facultativo); se não trabalhar, ajuste o valor no card.
+const FERIADOS_FIXOS = [['01-01','Confraternização Universal'],['01-25','Aniversário de São Paulo'],['04-21','Tiradentes'],['05-01','Dia do Trabalho'],['07-09','Revolução Constitucionalista'],['09-07','Independência'],['10-12','Nossa Senhora Aparecida'],['11-02','Finados'],['11-15','Proclamação da República'],['11-20','Consciência Negra'],['12-25','Natal']];
+function pascoa(y){ const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451); const mes=Math.floor((h+l-7*m+114)/31), dia=((h+l-7*m+114)%31)+1; return new Date(y, mes-1, dia, 12); }
+function feriadosDoAno(y){
+ const p = pascoa(y), desloc = n => { const d = new Date(p); d.setDate(d.getDate() + n); return localDate(d); };
+ return [...FERIADOS_FIXOS.map(([md, nome]) => ({date:`${y}-${md}`, nome})), {date:desloc(-2), nome:'Sexta-feira Santa'}, {date:desloc(60), nome:'Corpus Christi'}];
+}
+const ehFimDeSemana = iso => [0, 6].includes(new Date(iso + 'T12:00:00').getDay());
+const feriadosEmDiaUtil = ym => feriadosDoAno(Number(ym.slice(0,4))).filter(f => f.date.startsWith(ym) && !ehFimDeSemana(f.date)).sort((a,b) => a.date.localeCompare(b.date));
+function diasSemana(ym){ const [y,m] = ym.split('-').map(Number); let n = 0; for(let d = 1; d <= new Date(y, m, 0).getDate(); d++){ const w = new Date(y, m - 1, d).getDay(); if(w !== 0 && w !== 6) n++; } return n; }
+const diasUteis = ym => diasSemana(ym) - feriadosEmDiaUtil(ym).length;
+function ultimoDiaUtil(ym){ const [y,m] = ym.split('-').map(Number); const d = new Date(y, m, 0, 12); const fer = new Set(feriadosEmDiaUtil(ym).map(f => f.date)); while(d.getDay() === 0 || d.getDay() === 6 || fer.has(localDate(d))) d.setDate(d.getDate() - 1); return localDate(d); }
+// ID fixo por mês: evita lançar o salário duas vezes, mesmo abrindo o painel em vários aparelhos.
+const idSalario = ym => `5a1a0000-0000-4000-8000-000000${ym.replace('-', '')}`;
+const salarioCalculado = ym => round2(diasUteis(ym) * DIARIA);
+const nomeMesLongo = ym => new Date(ym + '-02T12:00:00').toLocaleDateString('pt-BR', {month:'long'});
+
+async function carregarSaldo(){
+ const {data, error} = await supabaseClient.from('account_balances').select('account,amount,as_of').eq('account', CONTA_PRINCIPAL).maybeSingle();
+ if(error){ console.error('Erro ao carregar saldo:', error.message); return; }
+ extra.balance = data ? {amount:Number(data.amount), asOf:String(data.as_of).slice(0,10)} : null;
+ renderRenda();
+}
+
+async function garantirSalarios(){
+ const {data:{session}} = await supabaseClient.auth.getSession(); if(!session) return;
+ for(let ym = SALARIO_DESDE; ym <= currentMonth; ym = ymAdd(ym, 1)){
+   const id = idSalario(ym);
+   if(state.transactions.some(t => t.id === id)) continue;
+   const t = {id, description:`Salário de ${nomeMesLongo(ym)}`, amount:salarioCalculado(ym), share:null, type:'income', category:'Salário', date:ultimoDiaUtil(ym), account:CONTA_PRINCIPAL};
+   const {error} = await supabaseClient.from('transactions').upsert(transactionToDb(t, session.user.id), {onConflict:'id', ignoreDuplicates:true});
+   if(error){ console.error('Erro ao lançar salário:', error.message); setStatus('Erro ao lançar salário automático'); return; }
+   state.transactions.push(t);
+ }
+ saveLocal(); render();
+}
+
+function saldoEmConta(ate){
+ const b = extra.balance; if(!b) return null;
+ const mov = state.transactions.filter(t => t.account === CONTA_PRINCIPAL && t.date > b.asOf && t.date <= ate);
+ return round2(b.amount + mov.reduce((s, t) => s + (t.type === 'income' ? 1 : -1) * Number(t.amount), 0));
+}
+
+function renderRenda(){
+ if(!$('saldoCard')) return;
+ const hoje = localDate(today);
+ const sal = state.transactions.find(t => t.id === idSalario(currentMonth));
+ const b = extra.balance;
+
+ // Saldo
+ if(!b){
+   $('saldoCard').innerHTML = `<div class="stat-label">Saldo em conta</div><div class="stat-value">—</div><div class="stat-foot">Informe o saldo atual da conta corrente.</div><div class="inline-edit"><input id="saldoInput" type="number" step="0.01" placeholder="0,00" aria-label="Saldo atual"><button type="button" data-save-balance>Salvar saldo</button></div>`;
+ } else {
+   const atual = saldoEmConta(hoje);
+   const previsto = sal && sal.date > hoje ? saldoEmConta(sal.date) : null;
+   $('saldoCard').innerHTML = `<span class="stat-icon">◧</span><div class="stat-label">Saldo em conta</div><div class="stat-value">${money(atual)}</div><div class="stat-foot">Base de ${money(b.amount)} em ${fmtCurta(b.asOf)}, mais as movimentações da conta corrente desde então.</div>
+     ${previsto != null ? `<div class="renda-line"><span>Previsto após o salário (${fmtCurta(sal.date)})</span><strong>${money(previsto)}</strong></div>` : ''}
+     <div class="inline-edit"><input id="saldoInput" type="number" step="0.01" value="${atual.toFixed(2)}" aria-label="Saldo atual"><button type="button" class="secondary" data-save-balance>Atualizar saldo</button></div>`;
+ }
+
+ // Salário
+ if(!sal){ $('salarioCard').innerHTML = `<div class="stat-label">Salário</div><div class="stat-foot">O salário deste mês é lançado automaticamente após o login.</div>`; return; }
+ const calc = salarioCalculado(currentMonth), ajustado = round2(sal.amount) !== calc;
+ const diaPg = new Date(sal.date + 'T12:00:00').toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'2-digit'});
+ $('salarioCard').innerHTML = `<span class="stat-icon">↗</span><div class="stat-label">Salário de ${nomeMesLongo(currentMonth)} — ${sal.date > hoje ? 'previsto' : 'recebido'}</div><div class="stat-value green">${money(sal.amount)}</div>
+   <div class="stat-foot">${diasUteis(currentMonth)} dias úteis × ${money(DIARIA)} = ${money(calc)}${ajustado ? ' (valor ajustado manualmente)' : ''}. Cai em ${diaPg}.</div>
+   ${feriadosEmDiaUtil(currentMonth).length ? `<div class="stat-foot">Feriados descontados: ${feriadosEmDiaUtil(currentMonth).map(f => `${fmtCurta(f.date)} ${f.nome}`).join(', ')}.</div>` : ''}
+   <div class="inline-edit"><input id="salarioInput" type="number" min="0" step="0.01" value="${Number(sal.amount).toFixed(2)}" aria-label="Valor do salário"><button type="button" class="secondary" data-save-salary>Ajustar valor</button>${ajustado ? `<button type="button" class="secondary" data-reset-salary>Voltar ao calculado</button>` : ''}</div>`;
+}
+
+async function salvarSalario(valor){
+ const sal = state.transactions.find(t => t.id === idSalario(currentMonth)); if(!sal) return;
+ if(!(valor >= 0)){ alert('Informe um valor válido para o salário.'); return; }
+ const {error} = await supabaseClient.from('transactions').update({amount:round2(valor)}).eq('id', sal.id);
+ if(error){ console.error('Erro ao ajustar salário:', error.message); alert('Não foi possível ajustar o salário: ' + error.message); return; }
+ sal.amount = round2(valor); saveLocal(); render(); setStatus('Salário ajustado');
+}
+
+async function salvarSaldo(valor){
+ if(!Number.isFinite(valor)){ alert('Informe o saldo atual.'); return; }
+ const {data:{session}} = await supabaseClient.auth.getSession(); if(!session) return;
+ const row = {user_id:session.user.id, account:CONTA_PRINCIPAL, amount:round2(valor), as_of:localDate(today), updated_at:new Date().toISOString()};
+ const {error} = await supabaseClient.from('account_balances').upsert(row, {onConflict:'user_id,account'});
+ if(error){ console.error('Erro ao salvar saldo:', error.message); alert('Não foi possível salvar o saldo: ' + error.message); return; }
+ extra.balance = {amount:row.amount, asOf:row.as_of}; renderRenda(); setStatus('Saldo atualizado');
+}
+
+document.querySelector('.renda').addEventListener('click', e => {
+ if(e.target.closest('[data-save-balance]')) void salvarSaldo(Number($('saldoInput').value === '' ? NaN : $('saldoInput').value));
+ if(e.target.closest('[data-save-salary]')) void salvarSalario(Number($('salarioInput').value));
+ if(e.target.closest('[data-reset-salary]')) void salvarSalario(salarioCalculado(currentMonth));
+});
+
+// ===== Divisão em lançamentos manuais e no extrato =====
+const lerDevedores = box => [...box.querySelectorAll('.debtor-row')].map(r => ({name:r.querySelector('[data-f=dname]').value.trim(), amount:Number(r.querySelector('[data-f=damount]').value)}));
+function adicionarDevedor(box, shareInput, total, jaDevido = 0){
+ const debtors = lerDevedores(box), share = shareInput.value === '' ? NaN : Number(shareInput.value), livre = round2(total - jaDevido);
+ let sugestao;
+ if(!debtors.length && (!Number.isFinite(share) || round2(share) === livre)){ sugestao = round2(livre / 2); shareInput.value = round2(livre - sugestao).toFixed(2); }
+ else sugestao = round2(livre - (Number.isFinite(share) ? share : 0) - debtors.reduce((s, d) => s + (d.amount > 0 ? d.amount : 0), 0));
+ box.insertAdjacentHTML('beforeend', debtorRowHtml(sugestao));
+ box.lastElementChild.querySelector('[data-f=dname]').focus();
+}
+function resumoDivisao(el, total, share, debtors, jaDevido = 0){
+ if(!debtors.length){ el.textContent = ''; return; }
+ const owed = round2(jaDevido + debtors.reduce((s, d) => s + (d.amount > 0 ? d.amount : 0), 0));
+ const sh = Number.isFinite(share) ? share : 0, rest = round2(total - sh - owed);
+ el.className = 'capture-summary ' + (rest < 0 ? 'red' : 'stat-foot');
+ el.textContent = `Sua parte ${money(sh)} + a receber ${money(owed)}` + (rest < 0 ? ` — passa do total em ${money(-rest)}` : rest > 0 ? ` — ${money(rest)} sem atribuição` : ' = total');
+}
+function atualizarResumoForm(){ resumoDivisao($('txSplitSummary'), Number($('valor').value) || 0, $('divisao').value === '' ? NaN : Number($('divisao').value), lerDevedores($('txDebtors'))); }
+
+$('txAddDebtor').addEventListener('click', () => {
+ const total = Number($('valor').value);
+ if(!(total > 0)){ alert('Informe o valor total antes de dividir.'); $('valor').focus(); return; }
+ adicionarDevedor($('txDebtors'), $('divisao'), total); atualizarResumoForm();
+});
+$('txDebtors').addEventListener('click', e => { const rm = e.target.closest('[data-remove-debtor]'); if(rm){ rm.closest('.debtor-row').remove(); atualizarResumoForm(); } });
+$('transactionForm').addEventListener('input', atualizarResumoForm);
+
+$('transactionForm').addEventListener('submit', async e => {
+ e.preventDefault();
+ const amount = Number($('valor').value), shareRaw = $('divisao').value, share = shareRaw === '' ? null : Number(shareRaw);
+ const debtors = lerDevedores($('txDebtors')), tipo = $('tipo').value;
+ if(!(amount > 0)){ alert('Informe o valor total.'); return; }
+ if(share !== null && (!(share >= 0) || share > amount)){ alert('Sua parte não pode ser negativa nem maior que o total.'); return; }
+ if(debtors.length){
+   if(tipo !== 'expense'){ alert('Só despesas podem ter alguém devendo.'); return; }
+   if(share === null){ alert('Informe sua parte (use 0 se a compra foi inteira para outra pessoa).'); return; }
+   const erro = validarCaptura({total:amount, share, debtors}); if(erro){ alert(erro); return; }
+ } else if(share === 0){ alert('Sua parte só pode ser zero se alguém te deve o valor. Use "+ Alguém me deve".'); return; }
+
+ const transaction = {id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()), description:$('descricao').value.trim(), amount, share, type:tipo, category:$('categoria').value, date:$('data').value, account:$('cartao').value};
+ state.transactions.push(transaction); saveLocal(); render();
+ let sincronizou = false;
+ try{ sincronizou = await syncTransactionToSupabase(transaction); setStatus('Transação salva na nuvem'); }
+ catch(error){ console.error('Erro ao salvar transação:', error.message); setStatus('Erro ao salvar na nuvem'); alert('A transação ficou salva neste navegador, mas não foi possível sincronizá-la: ' + error.message); }
+ let msg = `Salvo: ${transaction.description} — ${money(amount)}`;
+ if(debtors.length){
+   if(!sincronizou){ alert('Os valores a receber não foram registrados porque a transação não sincronizou. Use "Dividir" no Extrato depois.'); }
+   else {
+     const {error} = await supabaseClient.rpc('add_debtors', {p_transaction_id:transaction.id, p_debtors:debtors.map(d => ({name:d.name, amount:round2(d.amount)})), p_my_share:null});
+     if(error){ console.error('Erro ao registrar quem deve:', error.message); alert('A transação foi salva, mas não foi possível registrar quem deve: ' + error.message); }
+     else { msg += ` — a receber: ${debtors.map(d => `${d.name} ${money(d.amount)}`).join(', ')}`; await carregarRecebiveis(); }
+   }
+ }
+ e.target.reset(); $('data').value = localDate(today); $('txDebtors').innerHTML = ''; $('txSplitSummary').textContent = '';
+ $('txMsg').textContent = msg;
+});
+
+// ===== Extrato (todas as contas, por período da fatura) =====
+let extratoOffset = 0, extratoSplitAberto = null;
+const nomeContaExtrato = a => CARTOES_DA_MAE.includes(a) ? 'Cartão da mãe' : CONTAS_FORA_DO_CARTAO_MAE.includes(a) ? 'Por fora (mãe)' : (a || 'Sem conta');
+
+function renderExtrato(){
+ if(!$('extratoBody')) return;
+ const venc = ymAdd(faturaAberta(), extratoOffset), {ini, fim} = cicloDaFatura(venc);
+ const noCiclo = d => d >= ini && d <= fim;
+ $('extratoTitulo').textContent = `Período da fatura de ${nomeMesLongo(venc)}${extratoOffset === 0 ? ' (atual)' : ''}`;
+ $('extratoCiclo').textContent = `Compras de ${fmtCurta(ini)} a ${fmtCurta(fim)} e parcelas desta fatura.`;
+
+ const sel = $('extratoConta'), filtro = sel.value;
+ const contas = [...new Set([...state.transactions.filter(t => t.type === 'expense').map(t => nomeContaExtrato(t.account)), ...state.installments.map(i => nomeContaExtrato(i.account))])].sort();
+ sel.innerHTML = `<option value="">Todas as contas</option>` + contas.map(c => `<option${c === filtro ? ' selected' : ''}>${safe(c)}</option>`).join('');
+
+ // Só gastos: compras (sua parte) + parcelas que caem nesta fatura. Entradas não aparecem aqui.
+ const lista = state.transactions.filter(t => t.type === 'expense' && noCiclo(t.date) && (!filtro || nomeContaExtrato(t.account) === filtro)).sort((a,b) => a.date.localeCompare(b.date));
+ const parcelas = state.installments.filter(i => parcelaNaFatura(i, venc) && (!filtro || nomeContaExtrato(i.account) === filtro))
+   .sort((a,b) => (CONTAS_FORA_DO_CARTAO_MAE.includes(a.account) - CONTAS_FORA_DO_CARTAO_MAE.includes(b.account)) || a.name.localeCompare(b.name));
+ const tCompras = round2(lista.reduce((s, t) => s + Number(t.share ?? t.amount), 0));
+ const tParcelas = round2(parcelas.reduce((s, i) => s + Number(i.amount), 0));
+ const recPorTx = new Map();
+ for(const r of extra.receivables){ if(r.transaction_id){ if(!recPorTx.has(r.transaction_id)) recPorTx.set(r.transaction_id, []); recPorTx.get(r.transaction_id).push(r); } }
+
+ let html = `<div class="invoice-facts">
+   <div class="invoice-fact"><span>Total que você gastou</span><strong class="red">${money(tCompras + tParcelas)}</strong></div>
+   <div class="invoice-fact"><span>Compras (sua parte)</span><strong>${money(tCompras)}</strong></div>
+   <div class="invoice-fact"><span>Parcelas</span><strong>${money(tParcelas)}</strong></div>
+ </div>`;
+ let dia = '';
+ html += '<div class="invoice-block"><h3>Compras</h3>';
+ for(const t of lista){
+   if(t.date !== dia){ dia = t.date; html += `<div class="invoice-day">${fmtDiaFatura(t.date)}</div>`; }
+   const recs = recPorTx.get(t.id) || [];
+   const meta = [safe(t.category), safe(nomeContaExtrato(t.account))];
+   if(t.share != null && t.share < t.amount) meta.push(`total ${money(t.amount)}`);
+   if(recs.length) meta.push(recs.map(r => `${safe(r.personName)} deve ${money(r.amount)}`).join(', '));
+   html += `<div class="invoice-row"><div class="desc"><div>${safe(t.description)}</div><span class="meta">${meta.join(' — ')}</span></div><div class="val"><button type="button" class="link-btn" data-edit-tx="${safe(t.id)}">Editar</button><button type="button" class="link-btn" data-split="${safe(t.id)}">Dividir</button><span>${money(t.share ?? t.amount)}</span><button type="button" class="icon-btn" data-delete-transaction="${safe(t.id)}" aria-label="Excluir lançamento">✕</button></div></div>`;
+   html += editorTx(t);
+   if(extratoSplitAberto === t.id){
+     const jaDevido = round2(recs.reduce((s, r) => s + r.amount, 0));
+     html += `<div class="split-editor" data-split-tx="${safe(t.id)}" data-total="${t.amount}" data-ja="${jaDevido}">
+       <div class="form-grid"><div class="field"><label>Sua parte (R$)</label><input data-f="share" type="number" min="0" step="0.01" value="${Number(t.share ?? t.amount).toFixed(2)}"></div><div class="form-actions"><button type="button" class="secondary" data-split-add>+ Alguém me deve</button></div></div>
+       <div class="debtors"></div>
+       <div class="capture-foot"><span class="capture-summary"></span><div class="capture-actions"><button type="button" class="secondary" data-split-cancel>Cancelar</button><button type="button" data-split-save>Salvar divisão</button></div></div>
+     </div>`;
+   }
+ }
+ if(!lista.length) html += '<div class="invoice-empty">Nenhuma compra neste período.</div>';
+ html += '</div><div class="invoice-block"><h3>Parcelamentos</h3>';
+ for(const i of parcelas){
+   const fora = CONTAS_FORA_DO_CARTAO_MAE.includes(i.account), num = numeroParcela(i, venc);
+   const nome = fora ? `<span class="marca">${safe(i.name)}</span>` : safe(i.name);
+   const val = fora ? `<span class="marca">${money(i.amount)}</span>` : money(i.amount);
+   html += `<div class="invoice-row"><div class="desc"><div>${nome}</div><span class="meta">${num ? 'Parcela ' + num + ' — ' : ''}${safe(nomeContaExtrato(i.account))}</span></div><div class="val">${val}<button type="button" class="icon-btn" data-delete-installment="${safe(i.id)}" aria-label="Excluir parcelamento">✕</button></div></div>`;
+ }
+ if(!parcelas.length) html += '<div class="invoice-empty">Nenhum parcelamento nesta fatura.</div>';
+ html += '</div>';
+ $('extratoBody').innerHTML = html;
+ const ed = $('extratoBody').querySelector('[data-split-tx]');
+ if(ed && !ed.querySelector('.debtor-row')){ adicionarDevedor(ed.querySelector('.debtors'), ed.querySelector('[data-f=share]'), Number(ed.dataset.total), Number(ed.dataset.ja)); atualizarResumoSplit(ed); }
+}
+function atualizarResumoSplit(ed){ const sh = ed.querySelector('[data-f=share]').value; resumoDivisao(ed.querySelector('.capture-summary'), Number(ed.dataset.total), sh === '' ? NaN : Number(sh), lerDevedores(ed.querySelector('.debtors')), Number(ed.dataset.ja)); }
+
+async function salvarDivisao(ed, btn){
+ const id = ed.dataset.splitTx, total = Number(ed.dataset.total), ja = Number(ed.dataset.ja);
+ const shRaw = ed.querySelector('[data-f=share]').value, share = shRaw === '' ? NaN : Number(shRaw);
+ const debtors = lerDevedores(ed.querySelector('.debtors'));
+ if(!debtors.length){ alert('Adicione pelo menos uma pessoa.'); return; }
+ const erro = validarCaptura({total:round2(total - ja), share, debtors}); if(erro){ alert(erro); return; }
+ btn.disabled = true; btn.textContent = 'Salvando…';
+ const {error} = await supabaseClient.rpc('add_debtors', {p_transaction_id:id, p_debtors:debtors.map(d => ({name:d.name, amount:round2(d.amount)})), p_my_share:round2(share)});
+ if(error){ console.error('Erro ao dividir:', error.message); alert('Não foi possível salvar a divisão: ' + error.message); btn.disabled = false; btn.textContent = 'Salvar divisão'; return; }
+ const t = state.transactions.find(x => x.id === id); if(t) t.share = round2(share);
+ extratoSplitAberto = null; saveLocal(); setStatus('Divisão salva');
+ await carregarRecebiveis(); render();
+}
+
+$('extratoBody').addEventListener('click', e => {
+ const sp = e.target.closest('[data-split]'); if(sp){ extratoSplitAberto = extratoSplitAberto === sp.dataset.split ? null : sp.dataset.split; renderExtrato(); return; }
+ const ed = e.target.closest('[data-split-tx]'); if(!ed) return;
+ if(e.target.closest('[data-split-add]')){ adicionarDevedor(ed.querySelector('.debtors'), ed.querySelector('[data-f=share]'), Number(ed.dataset.total), Number(ed.dataset.ja)); atualizarResumoSplit(ed); return; }
+ const rm = e.target.closest('[data-remove-debtor]'); if(rm){ rm.closest('.debtor-row').remove(); atualizarResumoSplit(ed); return; }
+ if(e.target.closest('[data-split-cancel]')){ extratoSplitAberto = null; renderExtrato(); return; }
+ const sv = e.target.closest('[data-split-save]'); if(sv) void salvarDivisao(ed, sv);
+});
+$('extratoBody').addEventListener('input', e => { const ed = e.target.closest('[data-split-tx]'); if(ed) atualizarResumoSplit(ed); });
+$('extratoConta').addEventListener('change', renderExtrato);
+$('extratoPrev').addEventListener('click', () => { extratoOffset--; extratoSplitAberto = null; renderExtrato(); });
+$('extratoNext').addEventListener('click', () => { extratoOffset++; extratoSplitAberto = null; renderExtrato(); });
+
+// ===== Orçamento dinâmico (VR, lazer e total) =====
+// Limite de hoje = (orçamento − gasto antes de hoje) ÷ dias restantes do ciclo, contando hoje.
+// Gastar mais num dia reduz o limite dos seguintes; gastar menos aumenta.
+const VR_ESTIMADO = 1120;
+const CAT_VR = 'Alimentação', CAT_LAZER = 'Lazer';
+
+function diasEntre(ini, fim, soUteis){
+ const out = []; const fer = new Set();
+ for(let y = Number(ini.slice(0,4)); y <= Number(fim.slice(0,4)); y++) feriadosDoAno(y).forEach(f => fer.add(f.date));
+ for(let d = ini; d <= fim; d = diaSeguinte(d)){ if(!soUteis || (!ehFimDeSemana(d) && !fer.has(d))) out.push(d); }
+ return out;
+}
+
+function calcularEnvelope({orcamento, filtro, ini, fim, soUteis}){
+ const hoje = localDate(today);
+ const minhas = state.transactions.filter(t => t.type === 'expense' && t.date >= ini && t.date <= fim && filtro(t));
+ const valor = t => Number(t.share ?? t.amount);
+ const antes = round2(minhas.filter(t => t.date < hoje).reduce((s, t) => s + valor(t), 0));
+ const hojeGasto = round2(minhas.filter(t => t.date === hoje).reduce((s, t) => s + valor(t), 0));
+ const gasto = round2(minhas.reduce((s, t) => s + valor(t), 0));
+ const restantes = diasEntre(hoje > ini ? hoje : ini, fim, soUteis);
+ const hojeConta = restantes[0] === hoje;
+ let limiteHoje = null, limiteProximos;
+ if(hojeConta){ limiteHoje = round2((orcamento - antes) / restantes.length); limiteProximos = restantes.length > 1 ? round2((orcamento - gasto) / (restantes.length - 1)) : null; }
+ else limiteProximos = restantes.length ? round2((orcamento - gasto) / restantes.length) : null;
+ return {orcamento:round2(orcamento), gasto, hojeGasto, restante:round2(orcamento - gasto), dias:restantes.length, hojeConta, limiteHoje, disponivelHoje: limiteHoje == null ? null : round2(limiteHoje - hojeGasto), limiteProximos};
+}
+
+function cardEnvelope({titulo, env, unidade, extraLinhas = '', rodape = '', edit = ''}){
+ const pct = env.orcamento > 0 ? Math.min(100, env.gasto / env.orcamento * 100) : (env.gasto > 0 ? 100 : 0);
+ const over = env.restante < 0;
+ let destaque;
+ if(env.hojeConta){
+   destaque = `<div class="env-today">Ainda pode gastar hoje</div><div class="env-big ${env.disponivelHoje < 0 ? 'red' : 'green'}">${money(env.disponivelHoje)}</div><div class="env-note">Limite de hoje ${money(env.limiteHoje)}${env.hojeGasto ? `, já gastou ${money(env.hojeGasto)}` : ''}.</div>`;
+ } else {
+   destaque = `<div class="env-today">Hoje não conta como ${unidade}${env.hojeGasto ? ` — gastos de hoje (${money(env.hojeGasto)}) já saem do saldo` : ''}</div><div class="env-big ${env.limiteProximos != null && env.limiteProximos < 0 ? 'red' : ''}">${env.limiteProximos != null ? money(env.limiteProximos) : '—'}</div><div class="env-note">por ${unidade} nos próximos dias.</div>`;
+ }
+ return `<article class="env"><h3>${titulo}</h3>${destaque}
+   <div class="env-bar${over ? ' over' : ''}"><span style="width:${pct.toFixed(1)}%"></span></div>
+   <div class="env-line"><span>Orçamento</span><strong>${money(env.orcamento)}</strong></div>
+   <div class="env-line"><span>Gasto até agora</span><strong>${money(env.gasto)}</strong></div>
+   <div class="env-line"><span>${over ? 'Passou do orçamento' : 'Restante'}</span><strong class="${over ? 'red' : ''}">${money(Math.abs(env.restante))}</strong></div>
+   <div class="env-line"><span>${env.dias} ${unidade === 'dia útil' ? (env.dias === 1 ? 'dia útil restante' : 'dias úteis restantes') : (env.dias === 1 ? 'dia restante' : 'dias restantes')}${env.hojeConta ? ', contando hoje' : ''}</span><strong>${env.hojeConta && env.limiteProximos != null ? money(env.limiteProximos) + ' /dia depois de hoje' : ''}</strong></div>
+   ${extraLinhas}${rodape ? `<div class="env-note">${rodape}</div>` : ''}${edit}</article>`;
+}
+
+function renderOrcamento(){
+ if(!$('orcBody')) return;
+ const venc = faturaAberta(), {ini, fim} = cicloDaFatura(venc);
+ $('orcCiclo').textContent = `Ciclo da fatura de ${nomeMesLongo(venc)}: ${fmtCurta(ini)} a ${fmtCurta(fim)}. O limite diário se ajusta conforme você gasta.`;
+
+ // VR: consumido primeiro pela Alimentação (sua parte, qualquer conta), só em dias úteis.
+ const vrs = state.transactions.filter(t => t.type === 'income' && t.category === 'VR' && t.date >= ini && t.date <= fim);
+ const vrValor = vrs.length ? vrs.reduce((s, t) => s + Number(t.amount), 0) : VR_ESTIMADO;
+ const vr = calcularEnvelope({orcamento:vrValor, filtro:t => t.category === CAT_VR, ini, fim, soUteis:true});
+ const cardVR = cardEnvelope({titulo:'VR — alimentação', env:vr, unidade:'dia útil',
+   rodape: `${vrs.length ? 'VR registrado no ciclo.' : `Valor estimado (${money(VR_ESTIMADO)}): registre o VR quando cair.`} ${vr.restante > 0 ? `Se sobrar, os ${money(vr.restante)} abatem os outros gastos no acerto com a sua mãe.` : ''}`});
+
+ // Sobra do ciclo: salário que paga esta fatura + VR − parcelas − gastos que não são lazer.
+ // É o máximo que dá para guardar; o lazer consome essa sobra.
+ const mesSalario = ymAdd(venc, -1), sal = state.transactions.find(t => t.id === idSalario(mesSalario));
+ const salario = sal ? Number(sal.amount) : salarioCalculado(mesSalario);
+ const parcelas = round2(state.installments.filter(i => parcelaNaFatura(i, venc)).reduce((s, i) => s + Number(i.amount), 0));
+ const doCiclo = state.transactions.filter(t => t.type === 'expense' && t.date >= ini && t.date <= fim);
+ const minhaParte = t => Number(t.share ?? t.amount);
+ const outros = round2(doCiclo.filter(t => t.category !== CAT_LAZER).reduce((s, t) => s + minhaParte(t), 0));
+ const lazerGasto = round2(doCiclo.filter(t => t.category === CAT_LAZER).reduce((s, t) => s + minhaParte(t), 0));
+ const renda = round2(salario + vrValor);
+ // O VR que ainda não foi gasto fica reservado para alimentação até o fim do ciclo.
+ const vrReservado = round2(Math.max(0, vr.restante));
+ const sobraSemLazer = round2(renda - parcelas - outros - vrReservado);
+ const guardando = round2(sobraSemLazer - lazerGasto);
+
+ // Lazer: pode gastar o que sobra, dividido pelos dias restantes do ciclo.
+ const lazer = calcularEnvelope({orcamento:sobraSemLazer, filtro:t => t.category === CAT_LAZER, ini, fim, soUteis:false});
+ const cardLazer = cardEnvelope({titulo:'Lazer — o que sobra', env:lazer, unidade:'dia',
+   rodape:`Sobra do ciclo: salário de ${nomeMesLongo(mesSalario)} ${money(salario)} + VR ${money(vrValor)} − parcelas ${money(parcelas)} − outros gastos ${money(outros)} − VR reservado ${money(vrReservado)}.`});
+
+ // Guardar: quanto fica se não houver mais gasto com lazer.
+ const pctLazer = sobraSemLazer > 0 ? Math.min(100, lazerGasto / sobraSemLazer * 100) : 0;
+ const cardTotal = `<article class="env"><h3>Guardar</h3>
+   <div class="env-today">Fica guardado se você não gastar mais nada com lazer</div>
+   <div class="env-big ${guardando < 0 ? 'red' : 'green'}">${money(guardando)}</div>
+   <div class="env-bar${guardando < 0 ? ' over' : ''}"><span style="width:${pctLazer.toFixed(1)}%"></span></div>
+   <div class="env-line"><span>Salário + VR</span><strong>${money(renda)}</strong></div>
+   <div class="env-line"><span>− Parcelas</span><strong>${money(parcelas)}</strong></div>
+   <div class="env-line"><span>− Outros gastos (sem lazer)</span><strong>${money(outros)}</strong></div>
+   <div class="env-line"><span>− VR reservado para alimentação</span><strong>${money(vrReservado)}</strong></div>
+   <div class="env-line"><span>= Sobra sem nenhum lazer</span><strong>${money(sobraSemLazer)}</strong></div>
+   <div class="env-line"><span>− Lazer já gasto</span><strong>${money(lazerGasto)}</strong></div>
+   <div class="env-note">A barra mostra quanto da sobra o lazer já consumiu. Gastos futuros fora do lazer também reduzem esse valor.</div>
+ </article>`;
+
+ orcAtual = {vr, lazer, guardando};
+ $('orcBody').innerHTML = cardVR + cardLazer + cardTotal;
+}
+
+// ===== "Posso gastar?" =====
+let orcAtual = null;
+function avaliarGasto(valor, cat){
+ const {vr, lazer, guardando} = orcAtual;
+ const porDia = (resto, dias) => dias > 0 ? money(round2(resto / dias)) : null;
+ if(cat === 'Alimentação'){
+   const diasDepois = vr.hojeConta ? vr.dias - 1 : vr.dias;
+   if(vr.hojeConta && valor <= vr.disponivelHoje)
+     return ['sim', 'Pode.', `Cabe no limite de VR de hoje. Ainda sobram ${money(round2(vr.disponivelHoje - valor))} para hoje.`];
+   if(valor <= vr.restante){
+     const novo = porDia(vr.restante - valor, diasDepois);
+     return ['cuidado', 'Pode, mas aperta os próximos dias.', `Cabe no VR do ciclo, mas passa do limite de hoje.${novo ? ` Os próximos ${diasDepois} dias úteis ficam com ${novo} por dia${vr.limiteProximos != null ? ` (sem esse gasto, seriam ${money(vr.limiteProximos)})` : ''}.` : ''}`];
+   }
+   const excesso = round2(valor - Math.max(0, vr.restante)), novoGuardado = round2(guardando - excesso);
+   return [novoGuardado >= 0 ? 'cuidado' : 'nao', novoGuardado >= 0 ? 'Não cabe no VR.' : 'Não deveria.',
+     `Passa do VR do ciclo em ${money(excesso)}. Esse valor sai da sua sobra: o que você guardaria cai para ${money(novoGuardado)}.`];
+ }
+ // Lazer e outros gastos saem da sobra do ciclo.
+ const diasDepois = lazer.dias - 1, novoGuardado = round2(guardando - valor);
+ if(valor <= lazer.disponivelHoje)
+   return ['sim', 'Pode.', `Cabe no que sobra para hoje. O que você guardaria passa para ${money(novoGuardado)}.`];
+ if(valor <= lazer.restante){
+   const novo = porDia(lazer.restante - valor, diasDepois);
+   return ['cuidado', 'Pode, mas usa a margem de vários dias.', `${novo ? `Os próximos ${diasDepois} dias ficam com ${novo} por dia para lazer${lazer.limiteProximos != null ? ` (sem esse gasto, seriam ${money(lazer.limiteProximos)})` : ''}. ` : ''}O que você guardaria passa para ${money(novoGuardado)}.`];
+ }
+ return ['nao', 'Não deveria.', `Passa da sobra do ciclo em ${money(round2(valor - Math.max(0, lazer.restante)))}. Para pagar, você teria que tirar do dinheiro das parcelas ou da comida.`];
+}
+function verificarGasto(){
+ const valor = Number($('pgValor').value);
+ if(!(valor > 0)){ $('pgResult').innerHTML = ''; $('pgValor').focus(); return; }
+ if(!orcAtual) renderOrcamento();
+ const [nivel, titulo, texto] = avaliarGasto(round2(valor), $('pgCat').value);
+ $('pgResult').innerHTML = `<div class="pg-result pg-${nivel}"><strong>${titulo}</strong>${texto}</div>`;
+}
+$('pgBtn').addEventListener('click', verificarGasto);
+$('pgValor').addEventListener('keydown', e => { if(e.key === 'Enter') verificarGasto(); });
+$('pgCat').addEventListener('change', () => { if($('pgValor').value) verificarGasto(); });
+
+// ===== Editar lançamentos =====
+let editandoTx = null;
+function editorTx(t){
+ if(editandoTx !== t.id) return '';
+ const cats = [...$('categoria').options].map(o => o.value);
+ const contas = [...$('cartao').options].map(o => ({v:o.value, l:o.textContent}));
+ if(t.account && !contas.some(c => c.v === t.account)) contas.push({v:t.account, l:t.account});
+ const despesa = t.type === 'expense';
+ return `<div class="split-editor" data-edit-box="${safe(t.id)}"><div class="form-grid">
+   <div class="field"><label>Descrição</label><input data-e="description" maxlength="100" value="${safe(t.description)}"></div>
+   <div class="field"><label>Valor total (R$)</label><input data-e="amount" type="number" min="0.01" step="0.01" value="${Number(t.amount).toFixed(2)}"></div>
+   <div class="field"><label>Categoria</label><select data-e="category">${cats.map(c => `<option${c === t.category ? ' selected' : ''}>${safe(c)}</option>`).join('')}</select></div>
+   <div class="field"><label>Data</label><input data-e="date" type="date" value="${safe(t.date)}"></div>
+   <div class="field"><label>Conta / cartão</label><select data-e="account">${contas.map(c => `<option value="${safe(c.v)}"${c.v === (t.account || '') ? ' selected' : ''}>${safe(c.l)}</option>`).join('')}</select></div>
+   ${despesa ? `<div class="field"><label>Sua parte (R$; vazio = total)</label><input data-e="share" type="number" min="0" step="0.01" value="${t.share != null && Number(t.share) < Number(t.amount) ? Number(t.share).toFixed(2) : ''}"></div>` : ''}
+ </div><div class="capture-foot"><span class="stat-foot">Para registrar quem deve, use "Dividir" no Extrato.</span><div class="capture-actions"><button type="button" class="secondary" data-edit-cancel>Cancelar</button><button type="button" data-edit-save>Salvar alterações</button></div></div></div>`;
+}
+
+async function salvarEdicao(box, btn){
+ const t = state.transactions.find(x => x.id === box.dataset.editBox); if(!t) return;
+ const val = k => box.querySelector(`[data-e="${k}"]`)?.value;
+ const amount = Number(val('amount')), shareRaw = val('share'), share = shareRaw === undefined || shareRaw === '' ? null : Number(shareRaw);
+ const description = String(val('description') || '').trim(), date = val('date');
+ if(!description){ alert('Informe a descrição.'); return; }
+ if(!(amount > 0)){ alert('Informe um valor maior que zero.'); return; }
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date || '')){ alert('Informe a data.'); return; }
+ if(share !== null && (!(share >= 0) || share > amount)){ alert('Sua parte não pode ser negativa nem maior que o total.'); return; }
+ const devido = round2(extra.receivables.filter(r => r.transaction_id === t.id).reduce((s, r) => s + r.amount, 0));
+ if(devido > 0 && round2((share ?? amount) + devido) > round2(amount)){ alert(`Outras pessoas devem ${money(devido)} nesta compra. Sua parte somada a isso não pode passar do total.`); return; }
+ const upd = {description, amount:round2(amount), my_share:share === null ? null : round2(share), category:val('category'), transaction_date:date, account:val('account') || null};
+ btn.disabled = true; btn.textContent = 'Salvando…';
+ const {error} = await supabaseClient.from('transactions').update(upd).eq('id', t.id);
+ if(error){ console.error('Erro ao editar:', error.message); alert('Não foi possível salvar: ' + error.message); btn.disabled = false; btn.textContent = 'Salvar alterações'; return; }
+ Object.assign(t, {description, amount:upd.amount, share:upd.my_share, category:upd.category, date, account:upd.account || ''});
+ editandoTx = null; saveLocal(); render(); setStatus('Lançamento atualizado');
+}
+
+document.addEventListener('click', e => {
+ const ed = e.target.closest('[data-edit-tx]');
+ if(ed){ editandoTx = editandoTx === ed.dataset.editTx ? null : ed.dataset.editTx; extratoSplitAberto = null; renderExtrato(); renderLancamentos(); return; }
+ const box = e.target.closest('[data-edit-box]'); if(!box) return;
+ if(e.target.closest('[data-edit-cancel]')){ editandoTx = null; renderExtrato(); renderLancamentos(); return; }
+ const sv = e.target.closest('[data-edit-save]'); if(sv) void salvarEdicao(box, sv);
+});
+
+// ===== Celular: barra inferior e menu "Mais" =====
+function fecharMais(){ $('moreSheet').classList.add('hidden'); $('navMore').setAttribute('aria-expanded', 'false'); }
+$('navMore').addEventListener('click', e => {
+ e.stopPropagation();
+ const abrir = $('moreSheet').classList.contains('hidden');
+ $('moreSheet').classList.toggle('hidden', !abrir); $('navMore').setAttribute('aria-expanded', String(abrir));
+ $('sheetStatus').textContent = $('syncStatus').textContent;
+});
+$('moreSheet').addEventListener('click', e => { if(e.target.closest('a.sheet-link')) fecharMais(); });
+document.addEventListener('click', e => { if(!e.target.closest('#moreSheet') && !e.target.closest('#navMore')) fecharMais(); });
+window.addEventListener('hashchange', fecharMais);
+$('sheetExport').addEventListener('click', () => { fecharMais(); $('exportBtn').click(); });
+$('sheetLogout').addEventListener('click', () => { fecharMais(); $('logoutBtn').click(); });
+// "Mais" fica destacado quando a página aberta está dentro dele, e mostra o número de pendentes.
+const PAGINAS_MAIS = ['orcamento', 'pendentes', 'receber'];
+const marcarMais = () => $('navMore').classList.toggle('active', PAGINAS_MAIS.includes(location.hash.slice(1)));
+window.addEventListener('hashchange', marcarMais);
+new MutationObserver(() => {
+ const n = ($('navPendingCount').textContent.match(/\d+/) || [''])[0];
+ $('sheetPendingCount').textContent = $('navPendingCount').textContent;
+ $('navMoreBadge').textContent = n; $('navMoreBadge').classList.toggle('hidden', !n);
+}).observe($('navPendingCount'), {childList:true, characterData:true, subtree:true});
+marcarMais();
+irPara(location.hash.slice(1));render();renderPending();renderReceivables();
+</script>
+</body>
+</html>
