@@ -68,7 +68,7 @@
 <div class="app" id="appShell" style="visibility:hidden">
   <aside class="sidebar">
     <div class="brand">meu<span>controle</span>.</div><div class="nav-label">Visão geral</div>
-    <div class="navs"><a class="nav active" href="#painel" data-page="painel"><span class="nav-ic">▦</span><span class="nav-tx">Painel</span></a><a class="nav" href="#lancar" data-page="lancar"><span class="nav-ic">＋</span><span class="nav-tx">Lançamentos</span></a><a class="nav" href="#extrato" data-page="extrato"><span class="nav-ic">≡</span><span class="nav-tx">Extrato</span></a><a class="nav nav-sec" href="#orcamento" data-page="orcamento"><span class="nav-ic">◔</span><span class="nav-tx">Orçamento</span></a><a class="nav nav-sec" href="#pendentes" data-page="pendentes"><span class="nav-ic">◌</span><span class="nav-tx">Pendentes<span class="nav-count" id="navPendingCount"></span></span></a><a class="nav nav-sec" href="#receber" data-page="receber"><span class="nav-ic">⇄</span><span class="nav-tx">A receber</span></a><a class="nav" href="#fatura" data-page="fatura"><span class="nav-ic">▤</span><span class="nav-tx">Fatura</span></a><button type="button" class="nav nav-more" id="navMore" aria-expanded="false" aria-controls="moreSheet"><span class="nav-ic">⋯</span><span class="nav-tx">Mais<span class="nav-badge hidden" id="navMoreBadge"></span></span></button></div>
+    <div class="navs"><a class="nav active" href="#painel" data-page="painel"><span class="nav-ic">▦</span><span class="nav-tx">Painel</span></a><a class="nav" href="#lancar" data-page="lancar"><span class="nav-ic">＋</span><span class="nav-tx">Lançamentos</span></a><a class="nav" href="#extrato" data-page="extrato"><span class="nav-ic">≡</span><span class="nav-tx">Extrato</span></a><a class="nav nav-sec" href="#orcamento" data-page="orcamento"><span class="nav-ic">◔</span><span class="nav-tx">Orçamento</span></a><a class="nav nav-sec" href="#pendentes" data-page="pendentes"><span class="nav-ic">◌</span><span class="nav-tx">Pendentes<span class="nav-count" id="navPendingCount"></span></span></a><a class="nav nav-sec" href="#receber" data-page="receber"><span class="nav-ic">⇄</span><span class="nav-tx">A receber</span></a><a class="nav nav-sec" href="#pagar" data-page="pagar"><span class="nav-ic">⇥</span><span class="nav-tx">A pagar</span></a><a class="nav" href="#fatura" data-page="fatura"><span class="nav-ic">▤</span><span class="nav-tx">Fatura</span></a><button type="button" class="nav nav-more" id="navMore" aria-expanded="false" aria-controls="moreSheet"><span class="nav-ic">⋯</span><span class="nav-tx">Mais<span class="nav-badge hidden" id="navMoreBadge"></span></span></button></div>
     <div class="sidebar-note">Seus dados são sincronizados com sua conta. Mantenha seu acesso seguro.</div>
     <div class="sync-status" id="syncStatus">Aguardando login…</div>
     <button class="secondary" id="logoutBtn" style="margin:14px 8px 0">Sair da conta</button>
@@ -77,6 +77,7 @@
     <a class="sheet-link" href="#orcamento">◔ &nbsp; Orçamento</a>
     <a class="sheet-link" href="#pendentes">◌ &nbsp; Pendentes<span class="nav-count" id="sheetPendingCount"></span></a>
     <a class="sheet-link" href="#receber">⇄ &nbsp; A receber</a>
+    <a class="sheet-link" href="#pagar">⇥ &nbsp; A pagar</a>
     <button type="button" class="sheet-link" id="sheetExport">⇩ &nbsp; Exportar backup</button>
     <button type="button" class="sheet-link" id="sheetLogout">⎋ &nbsp; Sair da conta</button>
     <div class="sheet-status" id="sheetStatus"></div>
@@ -104,8 +105,13 @@
     </section>
     <section class="card lower" id="pendentes" data-pages="painel pendentes"><div class="section-head"><div><h2>Compras pendentes</h2><p>Capturadas pelo iPhone. Informe sua parte e quem te deve; ao classificar, a compra vira transação.</p></div><button class="secondary" id="refreshExtrasBtn" type="button">Atualizar</button></div><div id="pendingList" class="capture-list"></div><div class="empty hidden" id="emptyPending">Nenhuma compra pendente.</div><datalist id="peopleList"></datalist></section>
     <section class="card lower" id="receber" data-pages="painel receber"><div class="section-head"><div><h2>A receber</h2><p>Valores em aberto que outras pessoas te devem.</p></div><span class="pill" id="receivableTotal">R$ 0,00</span></div><div id="receivableList"></div><div class="empty hidden" id="emptyReceivables">Ninguém te deve nada no momento.</div></section>
+    <section class="card lower" id="pagar" data-pages="pagar"><div class="section-head"><div><h2>A pagar</h2><p>O que você deve a outras pessoas.</p></div><span class="pill" id="payableTotal">R$ 0,00</span></div>
+      <div id="payableList"></div><div class="empty hidden" id="emptyPayables">Você não deve nada no momento.</div>
+      <h3 style="font-size:14px;margin:22px 0 8px">Registrar uma dívida</h3>
+      <form id="payableForm" class="form-grid"><div class="field"><label for="payCreditor">Para quem</label><input id="payCreditor" required maxlength="60" list="peopleList" placeholder="Nome"></div><div class="field"><label for="payDesc">Descrição</label><input id="payDesc" required maxlength="100" placeholder="Ex.: empréstimo"></div><div class="field"><label for="payAmount">Valor (R$)</label><input id="payAmount" type="number" min="0.01" step="0.01" required placeholder="0,00"></div><div class="field"><label for="payDue">Vencimento (opcional)</label><input id="payDue" type="date"></div><div class="form-actions"><button type="submit">Salvar</button></div></form>
+    </section>
     <section class="card lower invoice" id="fatura" data-pages="painel fatura">
-      <div class="invoice-head"><div><div class="invoice-kicker">Cartão da mãe — Visa Infinite</div><h2 id="faturaTitulo">Fatura</h2><p class="stat-foot" id="faturaCiclo"></p></div><div class="invoice-nav"><button type="button" class="secondary" id="faturaPrev" aria-label="Fatura anterior">‹</button><button type="button" class="secondary" id="faturaNext" aria-label="Próxima fatura">›</button></div></div>
+      <div class="invoice-head"><div><div class="invoice-kicker" id="faturaKicker">Cartão de crédito</div><h2 id="faturaTitulo">Fatura</h2><p class="stat-foot" id="faturaCiclo"></p></div><div class="invoice-nav"><button type="button" class="secondary" id="faturaPrev" aria-label="Fatura anterior">‹</button><button type="button" class="secondary" id="faturaNext" aria-label="Próxima fatura">›</button></div></div>
       <div id="faturaBody"></div>
     </section>
     <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Gasto ou recebimento</h2><p>Compras feitas fora do iPhone, receitas e o VR.</p></div></div>
@@ -121,6 +127,10 @@
       <div id="extratoBody"></div>
     </section>
     <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Últimos lançamentos</h2><p>Os 10 mais recentes, de todas as contas.</p></div></div><div id="recentList"></div></section>
+    <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Gastos fixos</h2><p>Valores que se repetem todo mês (assinaturas, celular). Entram na sobra e nos seus gastos.</p></div></div>
+      <div id="fixedList"></div>
+      <form id="fixedForm" class="form-grid" style="margin-top:12px"><div class="field"><label for="fixName">Nome</label><input id="fixName" required maxlength="60" placeholder="Ex.: Spotify"></div><div class="field"><label for="fixAmount">Valor mensal (R$)</label><input id="fixAmount" type="number" min="0.01" step="0.01" required placeholder="0,00"></div><div class="field"><label for="fixAccount">Onde é cobrado</label><select id="fixAccount"></select></div><div class="form-actions"><button type="submit">Adicionar</button></div></form>
+    </section>
     <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Parcelamentos ativos</h2><p>De todas as contas, com a parcela da fatura aberta.</p></div></div><div id="activeInstList"></div></section>
     <div class="footnote">Seus registros são sincronizados com o Supabase quando você está conectada. Use Exportar backup para guardar uma cópia.</div>
   </main>
@@ -171,6 +181,9 @@ async function carregarDadosDaNuvem(session){
    supabaseClient.from('budgets').select('*').eq('user_id',userId)
  ]);
  if(trRes.error) throw trRes.error; if(inRes.error) throw inRes.error; if(buRes.error) throw buRes.error;
+ // Itens locais só são enviados se pertencem a este usuário (evita misturar contas no mesmo navegador).
+ if(state.ownerId !== userId){ state.transactions=[]; state.installments=[]; state.budgets={}; }
+ state.ownerId=userId;
  const cloudTransactions=trRes.data.map(transactionFromDb);
  const cloudInstallments=inRes.data.map(installmentFromDb);
  // Mescla registros locais ainda não presentes na nuvem, preservando o que já existe no banco.
@@ -202,10 +215,11 @@ function renderStats(){
  // Parcelas de todas as contas que caem nesta fatura (inclui as pagas por fora à mãe).
  const parc = state.installments.filter(i => parcelaNaFatura(i, venc)).reduce((s, i) => s + Number(i.amount), 0);
  const pend = extra.captures.filter(c => c.amount != null && noCiclo(dataSP(c.captured_at)));
- $('statExpenses').textContent = money(meus + parc);
- $('statExpensesFoot').textContent = `Compras de ${fmtCurta(ini)} a ${fmtCurta(fim)}: ${money(meus)} + parcelas: ${money(parc)}` + (pend.length ? `; fora ${pend.length} pendente${pend.length > 1 ? 's' : ''} (${money(pend.reduce((s, c) => s + c.amount, 0))})` : '');
+ const fixosTot = extra.fixos.reduce((s, f) => s + Number(f.amount), 0);
+ $('statExpenses').textContent = money(meus + parc + fixosTot);
+ $('statExpensesFoot').textContent = `Compras de ${fmtCurta(ini)} a ${fmtCurta(fim)}: ${money(meus)} + parcelas: ${money(parc)}${fixosTot ? ` + fixos: ${money(fixosTot)}` : ''}` + (pend.length ? `; fora ${pend.length} pendente${pend.length > 1 ? 's' : ''} (${money(pend.reduce((s, c) => s + c.amount, 0))})` : '');
 }
-function render(){renderStats();renderRenda();renderOrcamento();renderFatura();renderLancamentos();renderExtrato();}
+function render(){renderStats();renderRenda();renderOrcamento();renderFatura();renderLancamentos();renderExtrato();renderFixos();}
 function atualizarAcesso(session){$('loginScreen').style.display=session?'none':'flex';$('appShell').style.visibility=session?'visible':'hidden';if(!session)setStatus('Entre para sincronizar seus dados.');}
 let activeUserId=null; let loadingUserId=null;
 async function handleSession(session){atualizarAcesso(session);if(!session){activeUserId=null;return;}if(loadingUserId===session.user.id || activeUserId===session.user.id)return;loadingUserId=session.user.id;try{await carregarDadosDaNuvem(session);activeUserId=session.user.id;await carregarExtras();}catch(error){setStatus('Erro ao sincronizar');console.error('Erro ao carregar dados do Supabase:',error.message);$('loginMessage').textContent='Login realizado, mas houve erro ao carregar os dados: '+error.message;}finally{loadingUserId=null;}}
@@ -218,15 +232,15 @@ $('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify
 $('newTransactionBtn').addEventListener('click',()=>abrirLancamento('tx'));
 // ===== Capturas pendentes (iPhone) e valores a receber =====
 // Mantidos fora de `state` para não irem ao localStorage nem ao backup local: a fonte é sempre o Supabase.
-let extra = {captures:[], receivables:[], people:[], closings:{}, balance:null, envelopes:{}};
+let extra = {captures:[], receivables:[], people:[], closings:{}, balance:null, balances:{}, envelopes:{}, fixos:[], payables:[], debts:[]};
 const round2 = n => Math.round((Number(n) || 0) * 100) / 100;
 const fmtDateTime = iso => new Date(iso).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
 const fmtDate = iso => new Date(iso).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo'});
 const capById = id => extra.captures.find(c => c.id === id);
 
-function limparExtras(){ extra = {captures:[], receivables:[], people:[], closings:{}, balance:null, envelopes:{}}; renderPending(); renderReceivables(); }
+function limparExtras(){ extra = {captures:[], receivables:[], people:[], closings:{}, balance:null, balances:{}, envelopes:{}, fixos:[], payables:[], debts:[]}; aplicarConfig(null); cfgCarregada = false; renderPending(); renderReceivables(); }
 
-async function carregarExtras(){ await Promise.all([carregarPendentes(), carregarRecebiveis(), carregarFechamentos(), carregarSaldo()]); await garantirSalarios(); }
+async function carregarExtras(){ await carregarConfig(); await Promise.all([carregarPendentes(), carregarRecebiveis(), carregarFechamentos(), carregarSaldo(), carregarFixos(), carregarPagar()]); await garantirSalarios(); render(); }
 async function carregarFechamentos(){
  const {data,error} = await supabaseClient.from('card_closings').select('invoice_month,closing_date');
  if(error){ console.error('Erro ao carregar fechamentos:', error.message); return; }
@@ -372,7 +386,7 @@ async function descartarCaptura(item, btn){
 
 function renderReceivables(){
  // O que a mãe deve não aparece aqui: é compensado direto no Pix da fatura.
- const list = $('receivableList'), open = extra.receivables.filter(r => !ehMae(r.personName));
+ const list = $('receivableList'), open = extra.receivables.filter(r => !(CFG.mom_compensation && ehMae(r.personName)));
  $('emptyReceivables').classList.toggle('hidden', open.length > 0);
  $('receivableTotal').textContent = money(open.reduce((s,r) => s + r.amount, 0));
  const groups = new Map();
@@ -432,17 +446,17 @@ const ehMae = nome => ['mae', 'mamae', 'minha mae'].includes(String(nome || '').
 function dataDoRecebivel(r){ const t = r.transaction_id && state.transactions.find(x => x.id === r.transaction_id); return t ? t.date : dataSP(r.created_at); }
 // Regra: Pix = max(0, compras no cartão dela + parcelas do cartão dela − VR do ciclo) + parcelas fora do cartão.
 // A fatura é identificada pelo mês de vencimento; ela fecha no dia 29 do mês anterior.
-const CARTOES_DA_MAE = ['Visa Infinite Principal', 'Cartão da mãe'];
-const CONTAS_FORA_DO_CARTAO_MAE = ['Mãe'];
-const DIA_FECHAMENTO = 29;   // padrão; se cair no domingo, fecha no sábado (dia 28)
-const DIA_VENCIMENTO = 10;
+let CARTOES_DA_MAE = [];            // user_settings.card_accounts
+let CONTAS_FORA_DO_CARTAO_MAE = []; // user_settings.outside_accounts
+let DIA_FECHAMENTO = 29;   // user_settings.closing_day (domingo → sábado)
+let DIA_VENCIMENTO = 10;   // user_settings.due_day
 let acertoOffset = 0;
 
 function ymAdd(ym, n){ const [y,m] = ym.split('-').map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
 function diaSeguinte(iso){ const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + 1); return localDate(d); }
-// Fechamento padrão da fatura que vence no mês `venc`: dia 29 do mês anterior (domingo → sábado).
+// Fechamento padrão da fatura que vence no mês `venc`: dia configurado, no mês anterior (offset -1) ou no mesmo mês (offset 0); domingo → sábado.
 function fechamentoPadrao(venc){
- const ym = ymAdd(venc, -1), [y,m] = ym.split('-').map(Number);
+ const ym = ymAdd(venc, CFG.closing_month_offset), [y,m] = ym.split('-').map(Number);
  const d = new Date(y, m - 1, Math.min(DIA_FECHAMENTO, new Date(y, m, 0).getDate()), 12);
  if(d.getDay() === 0) d.setDate(d.getDate() - 1);
  return localDate(d);
@@ -486,11 +500,14 @@ function renderFatura(){
  const soma = (arr, f) => round2(arr.reduce((s, x) => s + Number(f(x)), 0));
  const tCompras = soma(lancamentos, x => x.amount);
  const tParcCartao = soma(parcCartao, i => i.amount), tFora = soma(parcFora, i => i.amount), tVR = soma(vrs, t => t.amount);
- const tFatura = round2(tCompras + tParcCartao);
+ // Gastos fixos cobrados no cartão principal entram na fatura.
+ const fixosCartao = extra.fixos.filter(f => CARTOES_DA_MAE.includes(f.account));
+ const tFixosCartao = soma(fixosCartao, f => f.amount);
+ const tFatura = round2(tCompras + tParcCartao + tFixosCartao);
  // O VR abate tudo o que é devido à mãe: fatura do cartão dela + parcelamentos por fora.
  const devido = round2(tFatura + tFora);
  // Compensação: o que a mãe te deve (valores em aberto até o fechamento) abate o Pix.
- const recsMae = extra.receivables.filter(r => ehMae(r.personName) && dataDoRecebivel(r) <= fim);
+ const recsMae = CFG.mom_compensation ? extra.receivables.filter(r => ehMae(r.personName) && dataDoRecebivel(r) <= fim) : [];
  const tMae = round2(recsMae.reduce((s, r) => s + r.amount, 0));
  const saldo = round2(devido - tVR - tMae);
  const pix = round2(Math.max(0, saldo));
@@ -510,7 +527,7 @@ function renderFatura(){
    const desc = fora ? `<span class="marca">${safe(i.name)}</span>` : safe(i.name);
    const val = fora ? `<span class="marca">${money(i.amount)}</span>` : money(i.amount);
    const num = numeroParcela(i, venc);
-   return `<div class="invoice-row"><div class="desc"><div>${desc}</div><span class="meta">${num ? 'Parcela ' + num : ''}${fora ? (num ? ' — ' : '') + 'por fora, direto para a mãe' : ''}</span></div><div class="val">${val}<button type="button" class="icon-btn" data-delete-installment="${safe(i.id)}" aria-label="Excluir parcelamento">✕</button></div></div>`;
+   return `<div class="invoice-row"><div class="desc"><div>${desc}</div><span class="meta">${num ? 'Parcela ' + num : ''}${fora ? (num ? ' — ' : '') + (i.account === 'Mãe' ? 'por fora, direto para a mãe' : 'por fora — ' + safe(i.account)) : ''}</span></div><div class="val">${val}<button type="button" class="icon-btn" data-delete-installment="${safe(i.id)}" aria-label="Excluir parcelamento">✕</button></div></div>`;
  };
  const parcelas = [...parcCartao.map(i => linhaParcela(i, false)), ...parcFora.map(i => linhaParcela(i, true))].join('');
 
@@ -523,7 +540,13 @@ function renderFatura(){
    </div>
    <div class="invoice-block"><h3>Compras</h3>${dias || '<div class="invoice-empty">Nenhuma compra neste ciclo.</div>'}</div>
    <div class="invoice-block"><h3>Parcelamentos</h3>${parcelas || '<div class="invoice-empty">Nenhum parcelamento nesta fatura.</div>'}</div>
-   <div class="invoice-summary">
+   ${fixosCartao.length ? `<div class="invoice-block"><h3>Gastos fixos</h3>${fixosCartao.map(f => `<div class="invoice-row"><div class="desc"><div>${safe(f.name)}</div><span class="meta">mensal</span></div><div class="val">${money(f.amount)}</div></div>`).join('')}</div>` : ''}
+   ${CFG.vr_mode === 'offset_mae' ? '' : `<div class="invoice-summary">
+     <div class="sum-row"><span>Total da fatura</span><span class="val">${money(tFatura)}</span></div>
+     ${parcFora.length ? `<div class="sum-row"><span><span class="marca">Parcelamentos por fora</span><span class="stat-foot">Pagos à parte, fora desta fatura.</span></span><span class="val"><span class="marca">+ ${money(tFora)}</span></span></div>` : ''}
+     <div class="sum-row total"><span>Total do mês (fatura + por fora)</span><span class="val">${money(round2(tFatura + tFora))}</span></div>
+   </div>`}
+   <div class="invoice-summary${CFG.vr_mode === 'offset_mae' ? '' : ' hidden'}">
      <div class="sum-row"><span>Total da fatura</span><span class="val">${money(tFatura)}</span></div>
      <div class="sum-row"><span><span class="marca">Parcelamentos por fora</span></span><span class="val"><span class="marca">+ ${money(tFora)}</span></span></div>
      <div class="sum-row"><span>VR do ciclo${vrs.length ? '' : ' <button type="button" class="secondary" data-register-vr style="padding:4px 10px;font-size:12px">Registrar VR</button>'}</span><span class="val">− ${money(tVR)}</span></div>
@@ -543,7 +566,8 @@ const PAGINAS = {
  orcamento:'Orçamento',
  pendentes:'Compras pendentes',
  receber:  'A receber',
- fatura:   'Fatura do cartão da mãe'
+ fatura:   'Fatura',
+ pagar:    'A pagar'
 };
 function irPara(pagina){
  if(pagina === 'inicio' || !PAGINAS[pagina]) pagina = 'painel';
@@ -566,7 +590,7 @@ function renderLancamentos(){
  if(!$('recentList')) return;
  const recentes = [...state.transactions].sort((a,b) => b.date.localeCompare(a.date)).slice(0, 10);
  $('recentList').innerHTML = recentes.length ? recentes.map(t => {
-   const conta = CARTOES_DA_MAE.includes(t.account) ? 'Cartão da mãe' : (t.account || 'Sem conta');
+   const conta = nomeContaExtrato(t.account);
    const sinal = t.type === 'income' ? '+' : '−';
    return `<div class="invoice-row"><div class="desc"><div>${safe(t.description)}</div><span class="meta">${new Date(t.date + 'T12:00:00').toLocaleDateString('pt-BR')} — ${safe(t.category)} — ${safe(conta)}</span></div><div class="val"><button type="button" class="link-btn" data-edit-tx="${safe(t.id)}">Editar</button><span class="${t.type === 'income' ? 'green' : 'red'}">${sinal} ${money(t.amount)}</span><button type="button" class="icon-btn" data-delete-transaction="${safe(t.id)}" aria-label="Excluir lançamento">✕</button></div></div>${editorTx(t)}`;
  }).join('') : '<div class="invoice-empty">Nenhum lançamento ainda.</div>';
@@ -609,8 +633,8 @@ $('faturaNext').addEventListener('click', () => { acertoOffset++; renderFatura()
 
 // ===== Saldo em conta e salário automático =====
 const CONTA_PRINCIPAL = 'Conta corrente';
-const DIARIA = 90;              // R$ por dia trabalhado (5x2: segunda a sexta)
-const SALARIO_DESDE = '2026-11'; // primeiro mês com lançamento automático
+let DIARIA = null;              // user_settings.salary_daily (null = sem salário automático)
+let SALARIO_DESDE = null;       // user_settings.salary_start
 
 // Feriados sem pagamento: nacionais + estadual de SP + municipais da cidade de São Paulo.
 // Carnaval não entra (é ponto facultativo); se não trabalhar, ajuste o valor no card.
@@ -626,26 +650,35 @@ function diasSemana(ym){ const [y,m] = ym.split('-').map(Number); let n = 0; for
 const diasUteis = ym => diasSemana(ym) - feriadosEmDiaUtil(ym).length;
 function ultimoDiaUtil(ym){ const [y,m] = ym.split('-').map(Number); const d = new Date(y, m, 0, 12); const fer = new Set(feriadosEmDiaUtil(ym).map(f => f.date)); while(d.getDay() === 0 || d.getDay() === 6 || fer.has(localDate(d))) d.setDate(d.getDate() - 1); return localDate(d); }
 // ID fixo por mês: evita lançar o salário duas vezes, mesmo abrindo o painel em vários aparelhos.
-const idSalario = ym => `5a1a0000-0000-4000-8000-000000${ym.replace('-', '')}`;
-const salarioCalculado = ym => round2(diasUteis(ym) * DIARIA);
+// ID determinístico por usuário e mês (evita duplicar ao abrir em vários aparelhos).
+const idAuto = (prefixo, ym) => `${(activeUserId || '00000000-0000-4000-8000-').slice(0, 24)}${prefixo}${ym.replace('-', '')}`;
+// Lançamento automático do mês: procura pelo mês e descrição, não pelo ID (compatível com lançamentos antigos).
+const salarioDoMes = ym => state.transactions.find(t => t.type === 'income' && t.category === 'Salário' && t.date.slice(0,7) === ym && String(t.description).startsWith('Salário de'));
+const vrDoMes = ym => state.transactions.find(t => t.type === 'income' && t.category === 'VR' && t.account === CFG.vr_account && t.date.slice(0,7) === ym && String(t.description).startsWith('VR de'));
+const salarioCalculado = ym => round2(diasUteis(ym) * (DIARIA || 0));
+const vrCalculado = ym => round2(diasUteis(ym) * (Number(CFG.vr_daily) || 0));
 const nomeMesLongo = ym => new Date(ym + '-02T12:00:00').toLocaleDateString('pt-BR', {month:'long'});
 
 async function carregarSaldo(){
- const {data, error} = await supabaseClient.from('account_balances').select('account,amount,as_of').eq('account', CONTA_PRINCIPAL).maybeSingle();
+ const {data, error} = await supabaseClient.from('account_balances').select('account,amount,as_of');
  if(error){ console.error('Erro ao carregar saldo:', error.message); return; }
- extra.balance = data ? {amount:Number(data.amount), asOf:String(data.as_of).slice(0,10)} : null;
- renderRenda();
+ extra.balances = Object.fromEntries(data.map(r => [r.account, {amount:Number(r.amount), asOf:String(r.as_of).slice(0,10)}]));
+ extra.balance = extra.balances[CONTA_PRINCIPAL] || null;
+ renderRenda(); renderOrcamento();
 }
 
 async function garantirSalarios(){
+ if(!cfgCarregada || !SALARIO_DESDE) return;
  const {data:{session}} = await supabaseClient.auth.getSession(); if(!session) return;
- for(let ym = SALARIO_DESDE; ym <= currentMonth; ym = ymAdd(ym, 1)){
-   const id = idSalario(ym);
-   if(state.transactions.some(t => t.id === id)) continue;
-   const t = {id, description:`Salário de ${nomeMesLongo(ym)}`, amount:salarioCalculado(ym), share:null, type:'income', category:'Salário', date:ultimoDiaUtil(ym), account:CONTA_PRINCIPAL};
+ const lancar = async t => {
    const {error} = await supabaseClient.from('transactions').upsert(transactionToDb(t, session.user.id), {onConflict:'id', ignoreDuplicates:true});
-   if(error){ console.error('Erro ao lançar salário:', error.message); setStatus('Erro ao lançar salário automático'); return; }
-   state.transactions.push(t);
+   if(error){ console.error('Erro no lançamento automático:', error.message); setStatus('Erro no lançamento automático'); return false; }
+   if(!state.transactions.some(x => x.id === t.id)) state.transactions.push(t); return true;
+ };
+ for(let ym = SALARIO_DESDE; ym <= currentMonth; ym = ymAdd(ym, 1)){
+   if(DIARIA && !salarioDoMes(ym) && !await lancar({id:idAuto('5a1a00', ym), description:`Salário de ${nomeMesLongo(ym)}`, amount:salarioCalculado(ym), share:null, type:'income', category:'Salário', date:ultimoDiaUtil(ym), account:CONTA_PRINCIPAL})) return;
+   // VR creditado no cartão de VR (modo cartão com saldo), no último dia útil.
+   if(CFG.vr_mode === 'card_balance' && CFG.vr_daily && CFG.vr_account && !vrDoMes(ym) && !await lancar({id:idAuto('0a0a00', ym), description:`VR de ${nomeMesLongo(ym)}`, amount:vrCalculado(ym), share:null, type:'income', category:'VR', date:ultimoDiaUtil(ym), account:CFG.vr_account})) return;
  }
  saveLocal(); render();
 }
@@ -659,7 +692,7 @@ function saldoEmConta(ate){
 function renderRenda(){
  if(!$('saldoCard')) return;
  const hoje = localDate(today);
- const sal = state.transactions.find(t => t.id === idSalario(currentMonth));
+ const sal = salarioDoMes(currentMonth);
  const b = extra.balance;
 
  // Saldo
@@ -674,6 +707,8 @@ function renderRenda(){
  }
 
  // Salário
+ $('salarioCard').style.display = DIARIA ? '' : 'none';
+ if(!DIARIA) return;
  if(!sal){ $('salarioCard').innerHTML = `<div class="stat-label">Salário</div><div class="stat-foot">O salário deste mês é lançado automaticamente após o login.</div>`; return; }
  const calc = salarioCalculado(currentMonth), ajustado = round2(sal.amount) !== calc;
  const diaPg = new Date(sal.date + 'T12:00:00').toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'2-digit'});
@@ -684,20 +719,21 @@ function renderRenda(){
 }
 
 async function salvarSalario(valor){
- const sal = state.transactions.find(t => t.id === idSalario(currentMonth)); if(!sal) return;
+ const sal = salarioDoMes(currentMonth); if(!sal) return;
  if(!(valor >= 0)){ alert('Informe um valor válido para o salário.'); return; }
  const {error} = await supabaseClient.from('transactions').update({amount:round2(valor)}).eq('id', sal.id);
  if(error){ console.error('Erro ao ajustar salário:', error.message); alert('Não foi possível ajustar o salário: ' + error.message); return; }
  sal.amount = round2(valor); saveLocal(); render(); setStatus('Salário ajustado');
 }
 
-async function salvarSaldo(valor){
+async function salvarSaldo(valor, conta = CONTA_PRINCIPAL){
  if(!Number.isFinite(valor)){ alert('Informe o saldo atual.'); return; }
  const {data:{session}} = await supabaseClient.auth.getSession(); if(!session) return;
- const row = {user_id:session.user.id, account:CONTA_PRINCIPAL, amount:round2(valor), as_of:localDate(today), updated_at:new Date().toISOString()};
+ const row = {user_id:session.user.id, account:conta, amount:round2(valor), as_of:localDate(today), updated_at:new Date().toISOString()};
  const {error} = await supabaseClient.from('account_balances').upsert(row, {onConflict:'user_id,account'});
  if(error){ console.error('Erro ao salvar saldo:', error.message); alert('Não foi possível salvar o saldo: ' + error.message); return; }
- extra.balance = {amount:row.amount, asOf:row.as_of}; renderRenda(); setStatus('Saldo atualizado');
+ extra.balances[conta] = {amount:row.amount, asOf:row.as_of}; extra.balance = extra.balances[CONTA_PRINCIPAL] || null;
+ renderRenda(); renderOrcamento(); setStatus('Saldo atualizado');
 }
 
 document.querySelector('.renda').addEventListener('click', e => {
@@ -765,7 +801,7 @@ $('transactionForm').addEventListener('submit', async e => {
 
 // ===== Extrato (todas as contas, por período da fatura) =====
 let extratoOffset = 0, extratoSplitAberto = null;
-const nomeContaExtrato = a => CARTOES_DA_MAE.includes(a) ? 'Cartão da mãe' : CONTAS_FORA_DO_CARTAO_MAE.includes(a) ? 'Por fora (mãe)' : (a || 'Sem conta');
+const nomeContaExtrato = a => CARTOES_DA_MAE.includes(a) ? rotuloCartao() : CONTAS_FORA_DO_CARTAO_MAE.includes(a) ? (a === 'Mãe' ? 'Por fora (mãe)' : `Por fora (${a})`) : a && a === CFG.vr_account ? `${a} (VR)` : (a || 'Sem conta');
 
 function renderExtrato(){
  if(!$('extratoBody')) return;
@@ -775,7 +811,7 @@ function renderExtrato(){
  $('extratoCiclo').textContent = `Compras de ${fmtCurta(ini)} a ${fmtCurta(fim)} e parcelas desta fatura.`;
 
  const sel = $('extratoConta'), filtro = sel.value;
- const contas = [...new Set([...state.transactions.filter(t => t.type === 'expense').map(t => nomeContaExtrato(t.account)), ...state.installments.map(i => nomeContaExtrato(i.account))])].sort();
+ const contas = [...new Set([...state.transactions.filter(t => t.type === 'expense').map(t => nomeContaExtrato(t.account)), ...state.installments.map(i => nomeContaExtrato(i.account)), ...extra.fixos.map(f => nomeContaExtrato(f.account))])].sort();
  sel.innerHTML = `<option value="">Todas as contas</option>` + contas.map(c => `<option${c === filtro ? ' selected' : ''}>${safe(c)}</option>`).join('');
 
  // Só gastos: compras (sua parte) + parcelas que caem nesta fatura. Entradas não aparecem aqui.
@@ -784,13 +820,15 @@ function renderExtrato(){
    .sort((a,b) => (CONTAS_FORA_DO_CARTAO_MAE.includes(a.account) - CONTAS_FORA_DO_CARTAO_MAE.includes(b.account)) || a.name.localeCompare(b.name));
  const tCompras = round2(lista.reduce((s, t) => s + Number(t.share ?? t.amount), 0));
  const tParcelas = round2(parcelas.reduce((s, i) => s + Number(i.amount), 0));
+ const fixosExt = extra.fixos.filter(f => !filtro || nomeContaExtrato(f.account) === filtro);
+ const tFixos = round2(fixosExt.reduce((s, f) => s + Number(f.amount), 0));
  const recPorTx = new Map();
  for(const r of extra.receivables){ if(r.transaction_id){ if(!recPorTx.has(r.transaction_id)) recPorTx.set(r.transaction_id, []); recPorTx.get(r.transaction_id).push(r); } }
 
  let html = `<div class="invoice-facts">
-   <div class="invoice-fact"><span>Total que você gastou</span><strong class="red">${money(tCompras + tParcelas)}</strong></div>
+   <div class="invoice-fact"><span>Total que você gastou</span><strong class="red">${money(tCompras + tParcelas + tFixos)}</strong></div>
    <div class="invoice-fact"><span>Compras (sua parte)</span><strong>${money(tCompras)}</strong></div>
-   <div class="invoice-fact"><span>Parcelas</span><strong>${money(tParcelas)}</strong></div>
+   <div class="invoice-fact"><span>Parcelas${tFixos ? ' e fixos' : ''}</span><strong>${money(tParcelas + tFixos)}</strong></div>
  </div>`;
  let dia = '';
  html += '<div class="invoice-block"><h3>Compras</h3>';
@@ -821,6 +859,7 @@ function renderExtrato(){
  }
  if(!parcelas.length) html += '<div class="invoice-empty">Nenhum parcelamento nesta fatura.</div>';
  html += '</div>';
+ if(fixosExt.length) html += `<div class="invoice-block"><h3>Gastos fixos</h3>${fixosExt.map(f => `<div class="invoice-row"><div class="desc"><div>${safe(f.name)}</div><span class="meta">mensal — ${safe(nomeContaExtrato(f.account))}</span></div><div class="val">${money(f.amount)}</div></div>`).join('')}</div>`;
  $('extratoBody').innerHTML = html;
  const ed = $('extratoBody').querySelector('[data-split-tx]');
  if(ed && !ed.querySelector('.debtor-row')){ adicionarDevedor(ed.querySelector('.debtors'), ed.querySelector('[data-f=share]'), Number(ed.dataset.total), Number(ed.dataset.ja)); atualizarResumoSplit(ed); }
@@ -857,7 +896,7 @@ $('extratoNext').addEventListener('click', () => { extratoOffset++; extratoSplit
 // ===== Orçamento dinâmico (VR, lazer e total) =====
 // Limite de hoje = (orçamento − gasto antes de hoje) ÷ dias restantes do ciclo, contando hoje.
 // Gastar mais num dia reduz o limite dos seguintes; gastar menos aumenta.
-const VR_ESTIMADO = 1120;
+let VR_ESTIMADO = 0;            // user_settings.vr_monthly_estimate
 const CAT_VR = 'Alimentação', CAT_LAZER = 'Lazer';
 
 function diasEntre(ini, fim, soUteis){
@@ -905,32 +944,42 @@ function renderOrcamento(){
  const venc = faturaAberta(), {ini, fim} = cicloDaFatura(venc);
  $('orcCiclo').textContent = `Ciclo da fatura de ${nomeMesLongo(venc)}: ${fmtCurta(ini)} a ${fmtCurta(fim)}. O limite diário se ajusta conforme você gasta.`;
 
- // VR: consumido primeiro pela Alimentação (sua parte, qualquer conta), só em dias úteis.
- const vrs = state.transactions.filter(t => t.type === 'income' && t.category === 'VR' && t.date >= ini && t.date <= fim);
- const vrValor = vrs.length ? vrs.reduce((s, t) => s + Number(t.amount), 0) : VR_ESTIMADO;
- const vr = calcularEnvelope({orcamento:vrValor, filtro:t => t.category === CAT_VR, ini, fim, soUteis:true});
- const cardVR = cardEnvelope({titulo:'VR — alimentação', env:vr, unidade:'dia útil',
-   rodape: `${vrs.length ? 'VR registrado no ciclo.' : `Valor estimado (${money(VR_ESTIMADO)}): registre o VR quando cair.`} ${vr.restante > 0 ? `Se sobrar, os ${money(vr.restante)} abatem os outros gastos no acerto com a sua mãe.` : ''}`});
+ // VR conforme o modo configurado:
+ //  offset_mae   → VR do ciclo consumido pela Alimentação; a sobra abate o acerto com a mãe.
+ //  card_balance → saldo do cartão de VR, consumido pelas compras nessa conta, até o próximo crédito.
+ //  none         → sem envelope de VR.
+ let vr = null, cardVR = '', vrValor = 0, vrReservado = 0;
+ if(CFG.vr_mode === 'offset_mae'){
+   const vrs = state.transactions.filter(t => t.type === 'income' && t.category === 'VR' && t.date >= ini && t.date <= fim);
+   vrValor = vrs.length ? vrs.reduce((s, t) => s + Number(t.amount), 0) : VR_ESTIMADO;
+   vr = calcularEnvelope({orcamento:vrValor, filtro:t => t.category === CAT_VR, ini, fim, soUteis:true});
+   vrReservado = round2(Math.max(0, vr.restante));
+   cardVR = cardEnvelope({titulo:'VR — alimentação', env:vr, unidade:'dia útil',
+     rodape: `${vrs.length ? 'VR registrado no ciclo.' : `Valor estimado (${money(VR_ESTIMADO)}): registre o VR quando cair.`} ${vr.restante > 0 ? `Se sobrar, os ${money(vr.restante)} abatem os outros gastos no acerto com a sua mãe.` : ''}`});
+ } else if(CFG.vr_mode === 'card_balance'){
+   vr = envelopeVRCartao();
+   cardVR = cardVRCartao(vr);
+ }
 
- // Sobra do ciclo: salário que paga esta fatura + VR − parcelas − gastos que não são lazer.
+ // Sobra do ciclo: salário que paga esta fatura (+ VR no modo abatimento) − parcelas − fixos − gastos que não são lazer.
  // É o máximo que dá para guardar; o lazer consome essa sobra.
- const mesSalario = ymAdd(venc, -1), sal = state.transactions.find(t => t.id === idSalario(mesSalario));
+ const mesSalario = ymAdd(venc, -1), sal = salarioDoMes(mesSalario);
  const salario = sal ? Number(sal.amount) : salarioCalculado(mesSalario);
  const parcelas = round2(state.installments.filter(i => parcelaNaFatura(i, venc)).reduce((s, i) => s + Number(i.amount), 0));
- const doCiclo = state.transactions.filter(t => t.type === 'expense' && t.date >= ini && t.date <= fim);
+ const fixos = round2(extra.fixos.reduce((s, f) => s + Number(f.amount), 0));
+ // No modo cartão de VR, as compras pagas com o VR não saem do salário.
+ const doCiclo = state.transactions.filter(t => t.type === 'expense' && t.date >= ini && t.date <= fim && !(CFG.vr_mode === 'card_balance' && t.account === CFG.vr_account));
  const minhaParte = t => Number(t.share ?? t.amount);
  const outros = round2(doCiclo.filter(t => t.category !== CAT_LAZER).reduce((s, t) => s + minhaParte(t), 0));
  const lazerGasto = round2(doCiclo.filter(t => t.category === CAT_LAZER).reduce((s, t) => s + minhaParte(t), 0));
  const renda = round2(salario + vrValor);
- // O VR que ainda não foi gasto fica reservado para alimentação até o fim do ciclo.
- const vrReservado = round2(Math.max(0, vr.restante));
- const sobraSemLazer = round2(renda - parcelas - outros - vrReservado);
+ const sobraSemLazer = round2(renda - parcelas - fixos - outros - vrReservado);
  const guardando = round2(sobraSemLazer - lazerGasto);
 
  // Lazer: pode gastar o que sobra, dividido pelos dias restantes do ciclo.
  const lazer = calcularEnvelope({orcamento:sobraSemLazer, filtro:t => t.category === CAT_LAZER, ini, fim, soUteis:false});
  const cardLazer = cardEnvelope({titulo:'Lazer — o que sobra', env:lazer, unidade:'dia',
-   rodape:`Sobra do ciclo: salário de ${nomeMesLongo(mesSalario)} ${money(salario)} + VR ${money(vrValor)} − parcelas ${money(parcelas)} − outros gastos ${money(outros)} − VR reservado ${money(vrReservado)}.`});
+   rodape:`Sobra do ciclo: salário de ${nomeMesLongo(mesSalario)} ${money(salario)}${vrValor ? ` + VR ${money(vrValor)}` : ''} − parcelas ${money(parcelas)}${fixos ? ` − fixos ${money(fixos)}` : ''} − outros gastos ${money(outros)}${vrReservado ? ` − VR reservado ${money(vrReservado)}` : ''}.`});
 
  // Guardar: quanto fica se não houver mais gasto com lazer.
  const pctLazer = sobraSemLazer > 0 ? Math.min(100, lazerGasto / sobraSemLazer * 100) : 0;
@@ -938,16 +987,18 @@ function renderOrcamento(){
    <div class="env-today">Fica guardado se você não gastar mais nada com lazer</div>
    <div class="env-big ${guardando < 0 ? 'red' : 'green'}">${money(guardando)}</div>
    <div class="env-bar${guardando < 0 ? ' over' : ''}"><span style="width:${pctLazer.toFixed(1)}%"></span></div>
-   <div class="env-line"><span>Salário + VR</span><strong>${money(renda)}</strong></div>
+   <div class="env-line"><span>${vrValor ? 'Salário + VR' : 'Salário'}</span><strong>${money(renda)}</strong></div>
    <div class="env-line"><span>− Parcelas</span><strong>${money(parcelas)}</strong></div>
+   ${fixos ? `<div class="env-line"><span>− Gastos fixos</span><strong>${money(fixos)}</strong></div>` : ''}
    <div class="env-line"><span>− Outros gastos (sem lazer)</span><strong>${money(outros)}</strong></div>
-   <div class="env-line"><span>− VR reservado para alimentação</span><strong>${money(vrReservado)}</strong></div>
+   ${vrReservado ? `<div class="env-line"><span>− VR reservado para alimentação</span><strong>${money(vrReservado)}</strong></div>` : ''}
    <div class="env-line"><span>= Sobra sem nenhum lazer</span><strong>${money(sobraSemLazer)}</strong></div>
    <div class="env-line"><span>− Lazer já gasto</span><strong>${money(lazerGasto)}</strong></div>
    <div class="env-note">A barra mostra quanto da sobra o lazer já consumiu. Gastos futuros fora do lazer também reduzem esse valor.</div>
  </article>`;
 
  orcAtual = {vr, lazer, guardando};
+ $('orcBody').style.gridTemplateColumns = cardVR ? '' : 'repeat(2,minmax(0,1fr))';
  $('orcBody').innerHTML = cardVR + cardLazer + cardTotal;
 }
 
@@ -956,7 +1007,7 @@ let orcAtual = null;
 function avaliarGasto(valor, cat){
  const {vr, lazer, guardando} = orcAtual;
  const porDia = (resto, dias) => dias > 0 ? money(round2(resto / dias)) : null;
- if(cat === 'Alimentação'){
+ if(cat === 'Alimentação' && vr){
    const diasDepois = vr.hojeConta ? vr.dias - 1 : vr.dias;
    if(vr.hojeConta && valor <= vr.disponivelHoje)
      return ['sim', 'Pode.', `Cabe no limite de VR de hoje. Ainda sobram ${money(round2(vr.disponivelHoje - valor))} para hoje.`];
@@ -1048,7 +1099,7 @@ window.addEventListener('hashchange', fecharMais);
 $('sheetExport').addEventListener('click', () => { fecharMais(); $('exportBtn').click(); });
 $('sheetLogout').addEventListener('click', () => { fecharMais(); $('logoutBtn').click(); });
 // "Mais" fica destacado quando a página aberta está dentro dele, e mostra o número de pendentes.
-const PAGINAS_MAIS = ['orcamento', 'pendentes', 'receber'];
+const PAGINAS_MAIS = ['orcamento', 'pendentes', 'receber', 'pagar'];
 const marcarMais = () => $('navMore').classList.toggle('active', PAGINAS_MAIS.includes(location.hash.slice(1)));
 window.addEventListener('hashchange', marcarMais);
 new MutationObserver(() => {
@@ -1057,7 +1108,169 @@ new MutationObserver(() => {
  $('navMoreBadge').textContent = n; $('navMoreBadge').classList.toggle('hidden', !n);
 }).observe($('navPendingCount'), {childList:true, characterData:true, subtree:true});
 marcarMais();
-irPara(location.hash.slice(1));render();renderPending();renderReceivables();
+
+// ===== Configurações por usuário (tabela user_settings) =====
+const CFG_PADRAO = {display_name:'', salary_daily:null, salary_start:null, vr_mode:'none', vr_daily:null, vr_monthly_estimate:null, vr_account:null,
+  card_label:'Cartão de crédito', card_accounts:[], outside_accounts:[], mom_compensation:false, closing_day:29, closing_month_offset:-1, due_day:10};
+let CFG = {...CFG_PADRAO}, cfgCarregada = false;
+const rotuloCartao = () => String(CFG.card_label || 'Cartão').split(' — ')[0];
+
+function aplicarConfig(c){
+ CFG = {...CFG_PADRAO, ...(c || {})};
+ for(const k of ['card_accounts', 'outside_accounts']) CFG[k] = Array.isArray(CFG[k]) ? CFG[k] : [];
+ CARTOES_DA_MAE = CFG.card_accounts; CONTAS_FORA_DO_CARTAO_MAE = CFG.outside_accounts;
+ DIA_FECHAMENTO = Number(CFG.closing_day) || 29; DIA_VENCIMENTO = Number(CFG.due_day) || 10;
+ DIARIA = CFG.salary_daily != null ? Number(CFG.salary_daily) : null;
+ SALARIO_DESDE = CFG.salary_start ? String(CFG.salary_start).slice(0,7) : null;
+ VR_ESTIMADO = Number(CFG.vr_monthly_estimate) || 0;
+ $('faturaKicker').textContent = CFG.card_label || 'Cartão de crédito';
+ montarSelects();
+}
+
+async function carregarConfig(){
+ const {data, error} = await supabaseClient.from('user_settings').select('*').maybeSingle();
+ if(error){ console.error('Erro ao carregar configurações:', error.message); setStatus('Erro ao carregar configurações'); }
+ if(!data && !error) setStatus('Conta sem configurações: cadastre em user_settings');
+ aplicarConfig(data); cfgCarregada = Boolean(data);
+}
+
+// Opções de conta nos formulários, a partir da configuração.
+function montarSelects(){
+ const cartao = CFG.card_accounts[0];
+ const base = [{v:'', l:'Não informado'}, {v:CONTA_PRINCIPAL, l:CONTA_PRINCIPAL}];
+ if(cartao) base.push({v:cartao, l:CFG.card_label || cartao});
+ if(CFG.vr_account) base.push({v:CFG.vr_account, l:`${CFG.vr_account} (VR)`});
+ for(const o of ['Bradesco', 'Itaú', 'Nubank', 'Dinheiro', 'Outro']) if(!base.some(b => b.v === o)) base.push({v:o, l:o});
+ const opt = arr => arr.map(o => `<option value="${safe(o.v)}">${safe(o.l)}</option>`).join('');
+ const atual = $('cartao').value; $('cartao').innerHTML = opt(base); if(base.some(b => b.v === atual)) $('cartao').value = atual;
+ $('fixAccount').innerHTML = opt(base.filter(b => b.v));
+ const inst = [];
+ if(cartao) inst.push({v:cartao, l:rotuloCartao()});
+ for(const a of CFG.outside_accounts) inst.push({v:a, l:a === 'Mãe' ? 'Por fora (direto para a mãe)' : `Por fora (${a})`});
+ for(const o of ['Outro cartão', 'Nubank', 'Outro']) if(!inst.some(b => b.v === o)) inst.push({v:o, l:o});
+ $('instAccount').innerHTML = opt(inst);
+}
+
+// ===== VR em cartão com saldo (Ticket etc.) =====
+function envelopeVRCartao(){
+ const conta = CFG.vr_account, b = extra.balances[conta], hoje = localDate(today);
+ if(!conta || !b) return null;
+ const mov = state.transactions.filter(t => t.account === conta && t.date > b.asOf && t.date <= hoje);
+ const efeito = t => (t.type === 'income' ? 1 : -1) * Number(t.amount);
+ // Saldo no início do dia: base + tudo antes de hoje + créditos de hoje.
+ const inicio = round2(b.amount + mov.filter(t => t.date < hoje || t.type === 'income').reduce((s, t) => s + efeito(t), 0));
+ const hojeGasto = round2(mov.filter(t => t.date === hoje && t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0));
+ let prox = ultimoDiaUtil(currentMonth); if(hoje >= prox) prox = ultimoDiaUtil(ymAdd(currentMonth, 1));
+ const ate = (() => { const d = new Date(prox + 'T12:00:00'); d.setDate(d.getDate() - 1); return localDate(d); })();
+ const dias = hoje <= ate ? diasEntre(hoje, ate, true) : [];
+ const hojeConta = dias[0] === hoje, restante = round2(inicio - hojeGasto);
+ const limiteHoje = hojeConta ? round2(inicio / dias.length) : null;
+ const depois = hojeConta ? dias.length - 1 : dias.length;
+ const credito = vrDoMes(prox.slice(0,7)), creditoPrevisto = credito ? Number(credito.amount) : vrCalculado(prox.slice(0,7));
+ return {orcamento:inicio, gasto:hojeGasto, hojeGasto, restante, dias:dias.length, hojeConta, limiteHoje,
+   disponivelHoje: limiteHoje == null ? null : round2(limiteHoje - hojeGasto), limiteProximos: depois > 0 ? round2(restante / depois) : null, prox, creditoPrevisto};
+}
+function cardVRCartao(env){
+ const conta = CFG.vr_account || 'VR';
+ const editar = (valor, rotulo) => `<div class="inline-edit"><input type="number" step="0.01" value="${valor}" placeholder="Saldo atual" data-vr-saldo aria-label="Saldo do cartão de VR"><button type="button" class="secondary" data-save-vr-saldo>${rotulo}</button></div>`;
+ if(!env) return `<article class="env"><h3>VR — ${safe(conta)}</h3><div class="env-note">Informe o saldo atual do cartão para calcular o limite diário.</div>${editar('', 'Salvar saldo')}</article>`;
+ const destaque = env.hojeConta
+   ? `<div class="env-today">Ainda pode gastar hoje</div><div class="env-big ${env.disponivelHoje < 0 ? 'red' : 'green'}">${money(env.disponivelHoje)}</div><div class="env-note">Limite de hoje ${money(env.limiteHoje)}${env.hojeGasto ? `, já gastou ${money(env.hojeGasto)}` : ''}.</div>`
+   : `<div class="env-today">Hoje não é dia útil${env.hojeGasto ? ` — gastos de hoje (${money(env.hojeGasto)}) já saem do saldo` : ''}</div><div class="env-big">${env.limiteProximos != null ? money(env.limiteProximos) : '—'}</div><div class="env-note">por dia útil até o próximo crédito.</div>`;
+ return `<article class="env"><h3>VR — ${safe(conta)}</h3>${destaque}
+   <div class="env-line"><span>Saldo no cartão</span><strong class="${env.restante < 0 ? 'red' : ''}">${money(env.restante)}</strong></div>
+   <div class="env-line"><span>Próximo crédito (${fmtCurta(env.prox)})</span><strong>${money(env.creditoPrevisto)}</strong></div>
+   <div class="env-line"><span>${env.dias} ${env.dias === 1 ? 'dia útil' : 'dias úteis'} até lá${env.hojeConta ? ', contando hoje' : ''}</span><strong>${env.hojeConta && env.limiteProximos != null ? money(env.limiteProximos) + ' /dia depois de hoje' : ''}</strong></div>
+   <div class="env-note">Consome só as compras lançadas na conta "${safe(conta)}". A sobra acumula para o mês seguinte.</div>
+   ${editar(env.restante.toFixed(2), 'Atualizar saldo')}</article>`;
+}
+$('orcBody').addEventListener('click', e => {
+ if(!e.target.closest('[data-save-vr-saldo]')) return;
+ const inp = $('orcBody').querySelector('[data-vr-saldo]');
+ void salvarSaldo(inp.value === '' ? NaN : Number(inp.value), CFG.vr_account);
+});
+
+// ===== Gastos fixos =====
+async function carregarFixos(){
+ const {data, error} = await supabaseClient.from('fixed_expenses').select('id,name,amount,account,active').eq('active', true).order('name');
+ if(error){ console.error('Erro ao carregar gastos fixos:', error.message); return; }
+ extra.fixos = data.map(f => ({...f, amount:Number(f.amount)}));
+ renderFixos();
+}
+function renderFixos(){
+ if(!$('fixedList')) return;
+ $('fixedList').innerHTML = extra.fixos.length
+   ? extra.fixos.map(f => `<div class="invoice-row"><div class="desc"><div>${safe(f.name)}</div><span class="meta">${safe(nomeContaExtrato(f.account))}</span></div><div class="val">${money(f.amount)}<button type="button" class="icon-btn" data-delete-fixed="${safe(f.id)}" aria-label="Remover gasto fixo">✕</button></div></div>`).join('')
+     + `<div class="invoice-row"><div class="desc"><strong>Total por mês</strong></div><div class="val">${money(extra.fixos.reduce((s, f) => s + f.amount, 0))}</div></div>`
+   : '<div class="invoice-empty">Nenhum gasto fixo cadastrado.</div>';
+}
+$('fixedForm').addEventListener('submit', async e => {
+ e.preventDefault();
+ const {data:{session}} = await supabaseClient.auth.getSession(); if(!session) return;
+ const row = {user_id:session.user.id, name:$('fixName').value.trim(), amount:round2(Number($('fixAmount').value)), account:$('fixAccount').value || null};
+ if(!row.name || !(row.amount > 0)){ alert('Informe o nome e um valor maior que zero.'); return; }
+ const {error} = await supabaseClient.from('fixed_expenses').insert(row);
+ if(error){ alert('Não foi possível salvar: ' + error.message); return; }
+ e.target.reset(); await carregarFixos(); render(); setStatus('Gasto fixo adicionado');
+});
+$('fixedList').addEventListener('click', async e => {
+ const b = e.target.closest('[data-delete-fixed]'); if(!b) return;
+ const f = extra.fixos.find(x => x.id === b.dataset.deleteFixed);
+ if(!confirm(`Remover "${f?.name}" dos gastos fixos?`)) return;
+ const {error} = await supabaseClient.from('fixed_expenses').delete().eq('id', b.dataset.deleteFixed);
+ if(error){ alert('Não foi possível remover: ' + error.message); return; }
+ await carregarFixos(); render(); setStatus('Gasto fixo removido');
+});
+
+// ===== A pagar: dívidas próprias + o que outra conta registrou como devido por você =====
+async function carregarPagar(){
+ const [pRes, dRes] = await Promise.all([
+   supabaseClient.from('payables').select('id,creditor,description,amount,due_date,created_at').eq('status', 'open').order('due_date', {ascending:true, nullsFirst:false}),
+   supabaseClient.rpc('my_debts')
+ ]);
+ if(pRes.error) console.error('Erro ao carregar contas a pagar:', pRes.error.message);
+ if(dRes.error) console.error('Erro ao carregar dívidas vinculadas:', dRes.error.message);
+ extra.payables = (pRes.data || []).map(p => ({...p, amount:Number(p.amount)}));
+ extra.debts = (dRes.data || []).map(d => ({...d, amount:Number(d.amount)}));
+ renderPagar();
+}
+function renderPagar(){
+ if(!$('payableList')) return;
+ const grupos = new Map();
+ const add = (nome, item) => { if(!grupos.has(nome)) grupos.set(nome, []); grupos.get(nome).push(item); };
+ for(const d of extra.debts) add(d.creditor_name, {...d, vinculado:true, data:d.transaction_date || dataSP(d.created_at)});
+ for(const p of extra.payables) add(p.creditor, {...p, vinculado:false});
+ const total = [...extra.debts, ...extra.payables].reduce((s, x) => s + x.amount, 0);
+ $('payableTotal').textContent = money(total);
+ $('emptyPayables').classList.toggle('hidden', grupos.size > 0);
+ const venc = d => d ? ` — vence ${new Date(d + 'T12:00:00').toLocaleDateString('pt-BR')}` : '';
+ $('payableList').innerHTML = [...grupos.entries()].map(([nome, itens]) => `<div class="receivable-group">
+   <div class="receivable-head"><div><strong>${safe(nome)}</strong><div class="stat-foot">${itens.length} ${itens.length === 1 ? 'valor em aberto' : 'valores em aberto'}</div></div><span class="receivable-sum red">${money(itens.reduce((s, i) => s + i.amount, 0))}</span></div>
+   ${itens.map(i => `<div class="invoice-row"><div class="desc"><div>${safe(i.description)}</div><span class="meta">${i.vinculado ? `registrado por ${safe(nome)}${i.data ? ' em ' + fmtCurta(i.data) : ''}` : 'registrado por você'}${venc(i.due_date)}</span></div><div class="val">${money(i.amount)}${i.vinculado ? '' : `<button type="button" class="secondary" style="padding:6px 10px" data-payable-paid="${safe(i.id)}">Paguei</button><button type="button" class="icon-btn" data-payable-delete="${safe(i.id)}" aria-label="Excluir">✕</button>`}</div></div>`).join('')}
+   ${itens.some(i => i.vinculado) ? `<div class="env-note">Os valores registrados por ${safe(nome)} saem daqui quando ${safe(nome)} marcar como recebido.</div>` : ''}
+ </div>`).join('');
+}
+$('payableForm').addEventListener('submit', async e => {
+ e.preventDefault();
+ const {data:{session}} = await supabaseClient.auth.getSession(); if(!session) return;
+ const row = {user_id:session.user.id, creditor:$('payCreditor').value.trim(), description:$('payDesc').value.trim(), amount:round2(Number($('payAmount').value)), due_date:$('payDue').value || null};
+ if(!row.creditor || !row.description || !(row.amount > 0)){ alert('Preencha para quem, a descrição e o valor.'); return; }
+ const {error} = await supabaseClient.from('payables').insert(row);
+ if(error){ alert('Não foi possível salvar: ' + error.message); return; }
+ e.target.reset(); await carregarPagar(); setStatus('Dívida registrada');
+});
+$('payableList').addEventListener('click', async e => {
+ const pg = e.target.closest('[data-payable-paid]'), dl = e.target.closest('[data-payable-delete]');
+ if(!pg && !dl) return;
+ const id = (pg || dl).dataset[pg ? 'payablePaid' : 'payableDelete'], item = extra.payables.find(p => p.id === id);
+ if(!confirm(pg ? `Marcar ${money(item.amount)} para ${item.creditor} como pago?` : `Excluir "${item.description}"?`)) return;
+ const q = pg ? supabaseClient.from('payables').update({status:'paid', paid_at:new Date().toISOString()}).eq('id', id) : supabaseClient.from('payables').delete().eq('id', id);
+ const {error} = await q;
+ if(error){ alert('Não foi possível atualizar: ' + error.message); return; }
+ await carregarPagar(); setStatus(pg ? 'Dívida marcada como paga' : 'Dívida excluída');
+});
+aplicarConfig(null);
+irPara(location.hash.slice(1));render();renderPending();renderReceivables();renderFixos();renderPagar();
 </script>
 </body>
 </html>
