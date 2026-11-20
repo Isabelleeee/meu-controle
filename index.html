@@ -52,6 +52,7 @@
  .sheet-status{font-size:12px;color:var(--muted);padding:6px 14px 4px}
  .topbar{margin-bottom:16px}
 }
+.req{color:var(--red);font-weight:700}
 </style>
 </head>
 <body>
@@ -112,7 +113,8 @@
       <form id="payableForm" class="form-grid"><div class="field"><label for="payCreditor">Para quem</label><input id="payCreditor" required maxlength="60" list="peopleList" placeholder="Nome"></div><div class="field"><label for="payDesc">Descrição</label><input id="payDesc" required maxlength="100" placeholder="Ex.: empréstimo"></div><div class="field"><label for="payAmount">Valor (R$)</label><input id="payAmount" type="number" min="0.01" step="0.01" required placeholder="0,00"></div><div class="field"><label for="payDue">Vencimento (opcional)</label><input id="payDue" type="date"></div><div class="form-actions"><button type="submit">Salvar</button></div></form>
     </section>
     <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Gasto ou recebimento</h2><p>Compras feitas fora do iPhone, receitas e o VR.</p></div></div>
-      <form id="transactionForm" class="form-grid"><div class="field"><label for="descricao">Descrição</label><input id="descricao" required maxlength="100" placeholder="Ex.: mercado, transporte..."></div><div class="field"><label for="valor">Valor total (R$)</label><input id="valor" type="number" min="0.01" step="0.01" required placeholder="0,00"></div><div class="field"><label for="tipo">Tipo</label><select id="tipo"><option value="expense">Despesa</option><option value="income">Receita</option></select></div><div class="field"><label for="categoria">Categoria</label><select id="categoria"><option>Alimentação</option><option>Compras</option><option value="Pagamento">Pagamento (fatura ou dívida)</option></select></div><div class="field"><label for="data">Data</label><input id="data" type="date" required></div><div class="field"><label for="divisao">Sua parte (R$; opcional)</label><input id="divisao" type="number" min="0" step="0.01" placeholder="Se dividir, informe sua parte"></div><div class="field"><label for="cartao">Conta / cartão (opcional)</label><select id="cartao"><option value="">Não informado</option><option>Conta corrente</option><option value="Visa Infinite Principal">Cartão da mãe (Visa Infinite)</option><option>Bradesco</option><option>Itaú</option><option>Nubank</option><option>Dinheiro</option><option>Outro</option></select></div><div class="tx-split"><div class="debtors" id="txDebtors"></div><div class="capture-foot"><button type="button" class="secondary" id="txAddDebtor">+ Alguém me deve</button><span class="capture-summary" id="txSplitSummary"></span></div></div><div class="form-actions"><button type="submit">Salvar transação</button></div></form>
+      <form id="transactionForm" class="form-grid"><div class="field"><label for="descricao">Nome <span class="req" aria-hidden="true">*</span></label><input id="descricao" required maxlength="100" placeholder="Ex.: mercado, transporte..."></div><div class="field"><label for="valor">Valor total (R$) <span class="req" aria-hidden="true">*</span></label><input id="valor" type="number" min="0.01" step="0.01" required placeholder="0,00"></div><div class="field"><label for="tipo">Tipo</label><select id="tipo"><option value="expense">Despesa</option><option value="income">Receita</option></select></div><div class="field"><label for="categoria">Categoria <span class="req" aria-hidden="true">*</span></label><select id="categoria" required><option value="" disabled selected>Selecione…</option><option>Alimentação</option><option>Compras</option><option value="Pagamento">Pagamento (fatura ou dívida)</option></select></div><div class="field"><label for="cartao">Conta ou cartão <span class="req" aria-hidden="true">*</span></label><select id="cartao" required><option value="" disabled selected>Selecione…</option><option>Conta corrente</option><option value="Visa Infinite Principal">Cartão da mãe (Visa Infinite)</option><option>Bradesco</option><option>Itaú</option><option>Nubank</option><option>Dinheiro</option><option>Outro</option></select></div><div class="field"><label for="data">Data <span class="req" aria-hidden="true">*</span></label><input id="data" type="date" required></div><div class="field"><label for="divisao">Sua parte (R$; opcional)</label><input id="divisao" type="number" min="0" step="0.01" placeholder="Se dividir, informe sua parte"></div><div class="tx-split"><div class="debtors" id="txDebtors"></div><div class="capture-foot"><button type="button" class="secondary" id="txAddDebtor">+ Alguém me deve</button><span class="capture-summary" id="txSplitSummary"></span></div></div><div class="form-actions"><button type="submit">Salvar transação</button></div></form>
+      <p class="stat-foot" style="margin:10px 0 0"><span class="req">*</span> campos obrigatórios</p>
       <p class="form-msg" id="txMsg" role="status"></p>
     </section>
     <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Parcelamento</h2><p>Informe a parcela que cai na fatura aberta; as demais são distribuídas nas faturas seguintes.</p></div></div>
@@ -702,7 +704,8 @@ $('transactionForm').addEventListener('submit', async e => {
  e.preventDefault();
  const amount = Number($('valor').value), shareRaw = $('divisao').value, share = shareRaw === '' ? null : Number(shareRaw);
  const debtors = lerDevedores($('txDebtors')), tipo = $('tipo').value;
- if(!(amount > 0)){ alert('Informe o valor total.'); return; }
+ const faltando = [!$('descricao').value.trim() && 'nome', !(amount > 0) && 'valor', !$('categoria').value && 'categoria', !$('cartao').value && 'conta ou cartão'].filter(Boolean);
+ if(faltando.length){ alert('Preencha: ' + faltando.join(', ') + '.'); return; }
  if(share !== null && (!(share >= 0) || share > amount)){ alert('Sua parte não pode ser negativa nem maior que o total.'); return; }
  if(debtors.length){
    if(tipo !== 'expense'){ alert('Só despesas podem ter alguém devendo.'); return; }
@@ -949,7 +952,7 @@ let editandoTx = null;
 function editorTx(t){
  if(editandoTx !== t.id) return '';
  const cats = t.type === 'income' ? CATS_RECEITA : CATS_DESPESA;
- const contas = [...$('cartao').options].map(o => ({v:o.value, l:o.textContent}));
+ const contas = [...$('cartao').options].filter(o => o.value).map(o => ({v:o.value, l:o.textContent}));
  if(t.account && !contas.some(c => c.v === t.account)) contas.push({v:t.account, l:t.account});
  const despesa = t.type === 'expense';
  return `<div class="split-editor" data-edit-box="${safe(t.id)}"><div class="form-grid">
@@ -1040,11 +1043,11 @@ async function carregarConfig(){
 // Opções de conta nos formulários, a partir da configuração.
 function montarSelects(){
  const cartao = CFG.card_accounts[0];
- const base = [{v:'', l:'Não informado'}, {v:CONTA_PRINCIPAL, l:CONTA_PRINCIPAL}];
+ const base = [{v:'', l:'Selecione…'}, {v:CONTA_PRINCIPAL, l:CONTA_PRINCIPAL}];
  if(cartao) base.push({v:cartao, l:CFG.card_label || cartao});
  if(CFG.vr_account) base.push({v:CFG.vr_account, l:`${CFG.vr_account} (VR)`});
  for(const o of ['Bradesco', 'Itaú', 'Nubank', 'Dinheiro', 'Outro']) if(!base.some(b => b.v === o)) base.push({v:o, l:o});
- const opt = arr => arr.map(o => `<option value="${safe(o.v)}">${safe(o.l)}</option>`).join('');
+ const opt = arr => arr.map(o => o.v === '' ? `<option value="" disabled selected>${safe(o.l)}</option>` : `<option value="${safe(o.v)}">${safe(o.l)}</option>`).join('');
  const atual = $('cartao').value; $('cartao').innerHTML = opt(base); if(base.some(b => b.v === atual)) $('cartao').value = atual;
  $('fixAccount').innerHTML = opt(base.filter(b => b.v));
  const inst = [];
@@ -1416,7 +1419,7 @@ async function carregarPagamentos(){
  extra.pagamentos = new Set(data.map(r => `${String(r.invoice_month).slice(0,7)}|${r.payee}`));
 }
 $('pagBody').addEventListener('click', async e => {
- if(e.target.closest('[data-register-vr]')){ abrirLancamento('tx', {descricao:'VR', valor:'', tipo:'income', categoria:'VR', cartao:'', divisao:'', data:localDate(today)}); return; }
+ if(e.target.closest('[data-register-vr]')){ abrirLancamento('tx', {descricao:'VR', valor:'', tipo:'income', categoria:'VR', cartao:(CFG.vr_account || 'Outro'), divisao:'', data:localDate(today)}); return; }
  const cr = e.target.closest('[data-cancel-rec]'); if(cr){ void cancelarRecebiveis([cr.dataset.cancelRec]); return; }
  const b = e.target.closest('[data-pagar], [data-desfazer-pg]'); if(!b) return;
  const pagar = b.hasAttribute('data-pagar'), [venc, chave] = (b.dataset.pagar || b.dataset.desfazerPg).split('|');
@@ -1447,7 +1450,7 @@ const CATS_RECEITA = ['Salário', 'VR', 'Outros'];
 const rotuloCategoria = c => c === 'Pagamento' ? 'Pagamento (fatura ou dívida)' : c;
 function montarCategorias(){
  const cats = $('tipo').value === 'income' ? CATS_RECEITA : CATS_DESPESA, atual = $('categoria').value;
- $('categoria').innerHTML = cats.map(c => `<option value="${c}">${rotuloCategoria(c)}</option>`).join('');
+ $('categoria').innerHTML = `<option value="" disabled selected>Selecione…</option>` + cats.map(c => `<option value="${c}">${rotuloCategoria(c)}</option>`).join('');
  if(cats.includes(atual)) $('categoria').value = atual;
 }
 $('tipo').addEventListener('change', montarCategorias);
