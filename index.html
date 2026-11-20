@@ -112,7 +112,7 @@
       <form id="payableForm" class="form-grid"><div class="field"><label for="payCreditor">Para quem</label><input id="payCreditor" required maxlength="60" list="peopleList" placeholder="Nome"></div><div class="field"><label for="payDesc">Descrição</label><input id="payDesc" required maxlength="100" placeholder="Ex.: empréstimo"></div><div class="field"><label for="payAmount">Valor (R$)</label><input id="payAmount" type="number" min="0.01" step="0.01" required placeholder="0,00"></div><div class="field"><label for="payDue">Vencimento (opcional)</label><input id="payDue" type="date"></div><div class="form-actions"><button type="submit">Salvar</button></div></form>
     </section>
     <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Gasto ou recebimento</h2><p>Compras feitas fora do iPhone, receitas e o VR.</p></div></div>
-      <form id="transactionForm" class="form-grid"><div class="field"><label for="descricao">Descrição</label><input id="descricao" required maxlength="100" placeholder="Ex.: mercado, transporte..."></div><div class="field"><label for="valor">Valor total (R$)</label><input id="valor" type="number" min="0.01" step="0.01" required placeholder="0,00"></div><div class="field"><label for="tipo">Tipo</label><select id="tipo"><option value="expense">Despesa</option><option value="income">Receita</option></select></div><div class="field"><label for="categoria">Categoria</label><select id="categoria"><option>Alimentação</option><option>Transporte</option><option>Moradia</option><option>Faculdade</option><option>Saúde</option><option>Lazer</option><option>Assinaturas</option><option>Salário</option><option>VR</option><option>Pix / transferência</option><option value="Pagamento">Pagamento (fatura ou dívida)</option><option>Compras</option><option>Outros</option></select></div><div class="field"><label for="data">Data</label><input id="data" type="date" required></div><div class="field"><label for="divisao">Sua parte (R$; opcional)</label><input id="divisao" type="number" min="0" step="0.01" placeholder="Se dividir, informe sua parte"></div><div class="field"><label for="cartao">Conta / cartão (opcional)</label><select id="cartao"><option value="">Não informado</option><option>Conta corrente</option><option value="Visa Infinite Principal">Cartão da mãe (Visa Infinite)</option><option>Bradesco</option><option>Itaú</option><option>Nubank</option><option>Dinheiro</option><option>Outro</option></select></div><div class="tx-split"><div class="debtors" id="txDebtors"></div><div class="capture-foot"><button type="button" class="secondary" id="txAddDebtor">+ Alguém me deve</button><span class="capture-summary" id="txSplitSummary"></span></div></div><div class="form-actions"><button type="submit">Salvar transação</button></div></form>
+      <form id="transactionForm" class="form-grid"><div class="field"><label for="descricao">Descrição</label><input id="descricao" required maxlength="100" placeholder="Ex.: mercado, transporte..."></div><div class="field"><label for="valor">Valor total (R$)</label><input id="valor" type="number" min="0.01" step="0.01" required placeholder="0,00"></div><div class="field"><label for="tipo">Tipo</label><select id="tipo"><option value="expense">Despesa</option><option value="income">Receita</option></select></div><div class="field"><label for="categoria">Categoria</label><select id="categoria"><option>Alimentação</option><option>Compras</option><option value="Pagamento">Pagamento (fatura ou dívida)</option></select></div><div class="field"><label for="data">Data</label><input id="data" type="date" required></div><div class="field"><label for="divisao">Sua parte (R$; opcional)</label><input id="divisao" type="number" min="0" step="0.01" placeholder="Se dividir, informe sua parte"></div><div class="field"><label for="cartao">Conta / cartão (opcional)</label><select id="cartao"><option value="">Não informado</option><option>Conta corrente</option><option value="Visa Infinite Principal">Cartão da mãe (Visa Infinite)</option><option>Bradesco</option><option>Itaú</option><option>Nubank</option><option>Dinheiro</option><option>Outro</option></select></div><div class="tx-split"><div class="debtors" id="txDebtors"></div><div class="capture-foot"><button type="button" class="secondary" id="txAddDebtor">+ Alguém me deve</button><span class="capture-summary" id="txSplitSummary"></span></div></div><div class="form-actions"><button type="submit">Salvar transação</button></div></form>
       <p class="form-msg" id="txMsg" role="status"></p>
     </section>
     <section class="card lower" data-pages="lancar"><div class="section-head"><div><h2>Parcelamento</h2><p>Informe a parcela que cai na fatura aberta; as demais são distribuídas nas faturas seguintes.</p></div></div>
@@ -286,9 +286,9 @@ async function carregarRecebiveis(){
 // Sugere a categoria usada da última vez para a mesma descrição.
 function guessCategory(merchant){
  const key = String(merchant || '').trim().toLowerCase();
- if(!key) return 'Outros';
+ if(!key) return 'Compras';
  const hit = [...state.transactions].filter(t => String(t.description || '').trim().toLowerCase() === key).sort((a,b) => b.date.localeCompare(a.date))[0];
- return hit ? hit.category : 'Outros';
+ return hit && CATS_DESPESA.includes(hit.category) ? hit.category : (hit && hit.category === 'Alimentação' ? 'Alimentação' : 'Compras');
 }
 
 function debtorRowHtml(amount){
@@ -299,7 +299,7 @@ function renderPending(){
  const list = $('pendingList'), caps = extra.captures;
  $('emptyPending').classList.toggle('hidden', caps.length > 0);
  $('navPendingCount').textContent = caps.length ? ` (${caps.length})` : '';
- const cats = [...$('categoria').options].map(o => o.value);
+ const cats = CATS_DESPESA;
  list.innerHTML = caps.map(c => {
    const hasAmount = c.amount != null;
    const cat = guessCategory(c.merchant);
@@ -410,7 +410,7 @@ function renderReceivables(){
  list.innerHTML = [...groups.values()].sort((a,b) => b.total - a.total).map(g => `
    <div class="receivable-group">
      <div class="receivable-head"><div><strong>${safe(g.name)}</strong><div class="stat-foot">${g.items.length} ${g.items.length === 1 ? 'valor em aberto' : 'valores em aberto'}</div></div><div style="display:flex;align-items:center;gap:10px"><span class="receivable-sum green">${money(g.total)}</span><button type="button" class="secondary" data-paid="${g.items.map(i => safe(i.id)).join(',')}">Recebi tudo</button></div></div>
-     <div class="table-wrap"><table><tbody>${g.items.map(i => `<tr><td>${safe(i.description)}</td><td>${fmtDate(i.created_at)}</td><td><strong>${money(i.amount)}</strong></td><td style="text-align:right"><button type="button" class="secondary" data-paid="${safe(i.id)}">Recebi</button></td></tr>`).join('')}</tbody></table></div>
+     <div class="table-wrap"><table><tbody>${g.items.map(i => `<tr><td>${safe(i.description)}</td><td>${fmtDate(i.created_at)}</td><td><strong>${money(i.amount)}</strong></td><td style="text-align:right;white-space:nowrap"><button type="button" class="secondary" data-paid="${safe(i.id)}">Recebi</button><button type="button" class="icon-btn" data-cancel-rec="${safe(i.id)}" aria-label="Excluir">✕</button></td></tr>`).join('')}</tbody></table></div>
    </div>`).join('');
 }
 
@@ -450,7 +450,7 @@ $('pendingList').addEventListener('click', e => {
  const ds = e.target.closest('[data-discard]');
  if(ds){ void descartarCaptura(item, ds); }
 });
-$('receivableList').addEventListener('click', e => { const b = e.target.closest('[data-paid]'); if(b) void marcarRecebido(b.dataset.paid.split(','), b); });
+$('receivableList').addEventListener('click', e => { const c = e.target.closest('[data-cancel-rec]'); if(c){ void cancelarRecebiveis([c.dataset.cancelRec]); return; } const b = e.target.closest('[data-paid]'); if(b) void marcarRecebido(b.dataset.paid.split(','), b); });
 $('refreshExtrasBtn').addEventListener('click', async e => { e.target.disabled = true; await carregarExtras(); e.target.disabled = false; setStatus('Pendências atualizadas'); });
 
 // ===== Acerto com a mãe =====
@@ -517,7 +517,10 @@ function irPara(pagina){
 window.addEventListener('hashchange', () => irPara(location.hash.slice(1)));
 
 function abrirLancamento(aba, preset){
- if(preset){ for(const [id, v] of Object.entries(preset)) $(id).value = v; }
+ if(preset){
+   if(preset.tipo){ $('tipo').value = preset.tipo; montarCategorias(); }
+   for(const [id, v] of Object.entries(preset)) if(id !== 'tipo') $(id).value = v;
+ }
  if(location.hash !== '#lancar') location.hash = 'lancar'; else irPara('lancar');
  const alvo = aba === 'inst' ? $('instName') : (preset?.valor === '' ? $('valor') : $('descricao'));
  setTimeout(() => alvo.focus(), 0);
@@ -718,7 +721,7 @@ $('transactionForm').addEventListener('submit', async e => {
      else { msg += ` — a receber: ${debtors.map(d => `${d.name} ${money(d.amount)}`).join(', ')}`; await carregarRecebiveis(); }
    }
  }
- e.target.reset(); $('data').value = localDate(today); $('txDebtors').innerHTML = ''; $('txSplitSummary').textContent = '';
+ e.target.reset(); montarCategorias(); $('data').value = localDate(today); $('txDebtors').innerHTML = ''; $('txSplitSummary').textContent = '';
  $('txMsg').textContent = msg;
 });
 
@@ -942,14 +945,14 @@ $('pgCat').addEventListener('change', () => { if($('pgValor').value) verificarGa
 let editandoTx = null;
 function editorTx(t){
  if(editandoTx !== t.id) return '';
- const cats = [...$('categoria').options].map(o => o.value);
+ const cats = t.type === 'income' ? CATS_RECEITA : CATS_DESPESA;
  const contas = [...$('cartao').options].map(o => ({v:o.value, l:o.textContent}));
  if(t.account && !contas.some(c => c.v === t.account)) contas.push({v:t.account, l:t.account});
  const despesa = t.type === 'expense';
  return `<div class="split-editor" data-edit-box="${safe(t.id)}"><div class="form-grid">
    <div class="field"><label>Descrição</label><input data-e="description" maxlength="100" value="${safe(t.description)}"></div>
    <div class="field"><label>Valor total (R$)</label><input data-e="amount" type="number" min="0.01" step="0.01" value="${Number(t.amount).toFixed(2)}"></div>
-   <div class="field"><label>Categoria</label><select data-e="category">${cats.map(c => `<option${c === t.category ? ' selected' : ''}>${safe(c)}</option>`).join('')}</select></div>
+   <div class="field"><label>Categoria</label><select data-e="category">${[...new Set([...cats, ...(cats.includes(t.category) ? [] : [t.category])])].map(c => `<option value="${safe(c)}"${c === t.category ? ' selected' : ''}>${safe(rotuloCategoria(c))}</option>`).join('')}</select></div>
    <div class="field"><label>Data</label><input data-e="date" type="date" value="${safe(t.date)}"></div>
    <div class="field"><label>Conta / cartão</label><select data-e="account">${contas.map(c => `<option value="${safe(c.v)}"${c.v === (t.account || '') ? ' selected' : ''}>${safe(c.l)}</option>`).join('')}</select></div>
    ${despesa ? `<div class="field"><label>Sua parte (R$; vazio = total)</label><input data-e="share" type="number" min="0" step="0.01" value="${t.share != null && Number(t.share) < Number(t.amount) ? Number(t.share).toFixed(2) : ''}"></div>` : ''}
@@ -1324,7 +1327,7 @@ function obrigacoesDaFatura(venc){
    const tVR = vrs.length ? vrs.reduce((s, t) => s + Number(t.amount), 0) : VR_ESTIMADO;
    if(tVR) mae.ajustes.push({desc: vrs.length ? 'VR do ciclo' : `VR estimado (registre quando cair)`, valor:-tVR, vrEstimado:!vrs.length});
    const recs = CFG.mom_compensation ? extra.receivables.filter(r => ehMae(r.personName) && dataDoRecebivel(r) <= fim) : [];
-   if(recs.length) mae.ajustes.push({desc:`Mãe te deve (${recs.map(r => r.description).join(', ')})`, valor:-recs.reduce((s, r) => s + r.amount, 0), ids:recs.map(r => r.id)});
+   for(const r of recs) mae.ajustes.push({desc:`Mãe te deve: ${r.description}`, valor:-r.amount, ids:[r.id], data:dataDoRecebivel(r), compensacao:true});
    if(mae.itens.length || mae.ajustes.length) grupos.set('mae', mae);
  }
  for(const g of grupos.values()){
@@ -1391,6 +1394,7 @@ function renderPagamentos(){
      html += `<div class="receivable-group">
        <div class="receivable-head"><div><strong>${safe(g.titulo)}</strong><div class="stat-foot">${g.pago ? 'Pago' : `Vence ${fmtCurta(g.vence)}`}${g.sobra ? ` — o VR cobre tudo e sobra ${money(g.sobra)}` : ''}</div></div>
          <div style="display:flex;align-items:center;gap:10px"><span class="receivable-sum ${g.pago ? 'green' : 'red'}">${money(g.total)}</span>${g.pago ? `<button type="button" class="secondary" data-desfazer-pg="${venc}|${safe(g.chave)}">Desfazer</button>` : `<button type="button" class="secondary" data-pagar="${venc}|${safe(g.chave)}">Paguei</button>`}</div></div>
+       ${g.ajustes.some(a => a.compensacao) ? `<div class="env-note" style="margin:4px 0 2px">O que ela te deve (já descontado):</div>${g.ajustes.filter(a => a.compensacao).map(a => `<div class="invoice-row"><div class="desc"><div>${safe(a.desc.replace('Mãe te deve: ', ''))}</div><span class="meta">${a.data ? fmtCurta(a.data) : ''}</span></div><div class="val green">− ${money(-a.valor)}<button type="button" class="icon-btn" data-cancel-rec="${safe(a.ids[0])}" aria-label="Excluir">✕</button></div></div>`).join('')}` : ''}
        <details><summary class="link-btn" style="display:inline-block">Ver ${g.itens.length} ${g.itens.length === 1 ? 'item' : 'itens'}</summary>${ordenados.map(linha).join('')}
          ${g.ajustes.map(a => `<div class="invoice-row"><div class="desc"><div>${safe(a.desc)}</div></div><div class="val green">− ${money(-a.valor)}</div></div>`).join('')}
          <div class="invoice-row"><div class="desc"><strong>Total</strong></div><div class="val"><strong>${money(g.total)}</strong></div></div></details>
@@ -1410,18 +1414,19 @@ async function carregarPagamentos(){
 }
 $('pagBody').addEventListener('click', async e => {
  if(e.target.closest('[data-register-vr]')){ abrirLancamento('tx', {descricao:'VR', valor:'', tipo:'income', categoria:'VR', cartao:'', divisao:'', data:localDate(today)}); return; }
+ const cr = e.target.closest('[data-cancel-rec]'); if(cr){ void cancelarRecebiveis([cr.dataset.cancelRec]); return; }
  const b = e.target.closest('[data-pagar], [data-desfazer-pg]'); if(!b) return;
  const pagar = b.hasAttribute('data-pagar'), [venc, chave] = (b.dataset.pagar || b.dataset.desfazerPg).split('|');
  const g = obrigacoesDaFatura(venc).find(x => x.chave === chave); if(!g) return;
- const comp = g.ajustes.find(a => a.ids);
- if(!confirm(pagar ? `Marcar ${money(g.total)} para ${g.titulo} (fatura de ${nomeMesLongo(venc)}) como pago?${comp ? ' O que a sua mãe te devia também será dado como acertado.' : ''}` : `Desfazer o pagamento de ${g.titulo}?`)) return;
+ const compIds = g.ajustes.filter(a => a.ids).flatMap(a => a.ids);
+ if(!confirm(pagar ? `Marcar ${money(g.total)} para ${g.titulo} (fatura de ${nomeMesLongo(venc)}) como pago?${compIds.length ? ' O que a sua mãe te devia também será dado como acertado.' : ''}` : `Desfazer o pagamento de ${g.titulo}?`)) return;
  const {data:{session}} = await supabaseClient.auth.getSession(); if(!session) return;
  const q = pagar
    ? supabaseClient.from('obligation_payments').upsert({user_id:session.user.id, invoice_month:`${venc}-01`, payee:chave, amount:g.total, paid_at:new Date().toISOString()}, {onConflict:'user_id,invoice_month,payee'})
    : supabaseClient.from('obligation_payments').delete().eq('invoice_month', `${venc}-01`).eq('payee', chave);
  const {error} = await q;
  if(error){ alert('Não foi possível salvar: ' + error.message); return; }
- if(pagar && comp){ const r = await supabaseClient.from('receivables').update({status:'paid', paid_at:new Date().toISOString()}).in('id', comp.ids); if(r.error) alert('O pagamento foi salvo, mas a compensação não: ' + r.error.message); }
+ if(pagar && compIds.length){ const r = await supabaseClient.from('receivables').update({status:'paid', paid_at:new Date().toISOString()}).in('id', compIds); if(r.error) alert('O pagamento foi salvo, mas a compensação não: ' + r.error.message); }
  await carregarPagamentos(); await carregarRecebiveis(); render(); setStatus(pagar ? 'Pagamento registrado' : 'Pagamento desfeito');
 });
 
@@ -1432,7 +1437,30 @@ function renderAssinaturas(){
  $('subsList').innerHTML = fx.length ? fx.map(f => `<div class="invoice-row"><div class="desc"><div>${safe(f.name)}</div><span class="meta">${f.charge_day ? `dia ${f.charge_day} — ` : ''}${safe(nomeContaExtrato(f.account))}${rateioTexto(f)}</span></div><div class="val">${money(minhaParteFixo(f))}${f.share != null && f.share < f.amount ? `<span class="stat-foot">&nbsp;de ${money(f.amount)}</span>` : ''}</div></div>`).join('')
    : '<div class="invoice-empty">Nenhuma assinatura cadastrada.</div>';
 }
+
+// ===== Categorias =====
+const CATS_DESPESA = ['Alimentação', 'Compras', 'Pagamento'];
+const CATS_RECEITA = ['Salário', 'VR', 'Outros'];
+const rotuloCategoria = c => c === 'Pagamento' ? 'Pagamento (fatura ou dívida)' : c;
+function montarCategorias(){
+ const cats = $('tipo').value === 'income' ? CATS_RECEITA : CATS_DESPESA, atual = $('categoria').value;
+ $('categoria').innerHTML = cats.map(c => `<option value="${c}">${rotuloCategoria(c)}</option>`).join('');
+ if(cats.includes(atual)) $('categoria').value = atual;
+}
+$('tipo').addEventListener('change', montarCategorias);
+
+// ===== Excluir valor a receber =====
+// Marca como cancelado em vez de apagar: assim os valores mensais automáticos (ex.: assinatura dividida) não voltam.
+async function cancelarRecebiveis(ids){
+ const itens = extra.receivables.filter(r => ids.includes(r.id));
+ const nome = itens[0] ? `"${itens[0].description}" (${money(itens[0].amount)})` : 'este valor';
+ if(!confirm(`Excluir ${nome}? Ele deixa de aparecer para você e para a pessoa.`)) return;
+ const {error} = await supabaseClient.from('receivables').update({status:'canceled', paid_at:null}).in('id', ids);
+ if(error){ console.error('Erro ao excluir valor a receber:', error.message); alert('Não foi possível excluir: ' + error.message); return; }
+ await carregarRecebiveis(); render(); setStatus('Valor a receber excluído');
+}
 aplicarConfig(null);
+montarCategorias();
 irPara(location.hash.slice(1));render();renderPending();renderReceivables();renderFixos();renderPagar();
 </script>
 </body>
