@@ -53,6 +53,7 @@
  .topbar{margin-bottom:16px}
 }
 .req{color:var(--red);font-weight:700}
+.sim-verdict{margin-top:16px}.sim-table td,.sim-table th{white-space:nowrap;font-size:13px;text-align:right}.sim-table td:first-child,.sim-table th:first-child{text-align:left}.sim-table tr.sim-best td{background:#f0efff;font-weight:700}.sim-insights{margin:14px 0 0;padding-left:18px;font-size:13px;line-height:1.6}.sim-insights li{margin:4px 0}.sim-h{font-size:14px;margin:20px 0 6px}
 </style>
 </head>
 <body>
@@ -104,6 +105,20 @@
         <div class="inline-edit"><input id="pgValor" type="number" min="0.01" step="0.01" placeholder="Valor (R$)" aria-label="Valor do gasto"><select id="pgCat" aria-label="Tipo de gasto"><option>Lazer</option><option>Alimentação</option><option>Outro</option></select><button type="button" id="pgBtn">Verificar</button></div>
         <div id="pgResult" role="status"></div>
       </div>
+    </section>
+    <section class="card lower" id="simulador" data-pages="orcamento">
+      <div class="section-head"><div><h2>Posso comprar?</h2><p>Simula a compra contra o que você já tem: fatura atual, parcelas, assinaturas, salário e o seu gasto do dia a dia, mês a mês.</p></div></div>
+      <form id="simForm" class="form-grid">
+        <div class="field"><label for="simNome">O que é</label><input id="simNome" maxlength="60" placeholder="Ex.: fone novo"></div>
+        <div class="field"><label for="simValor">Valor à vista (R$) <span class="req">*</span></label><input id="simValor" type="number" min="0.01" step="0.01" required placeholder="0,00"></div>
+        <div class="field"><label for="simParcelas">Parcelas (1 = à vista)</label><input id="simParcelas" type="number" min="1" max="24" step="1" value="1"></div>
+        <div class="field"><label for="simInicio">1ª parcela cai na fatura de</label><select id="simInicio"></select></div><div class="field"><label for="simTotal">Total parcelado, se tiver juros</label><input id="simTotal" type="number" min="0.01" step="0.01" placeholder="Igual ao à vista"></div>
+        <div class="field"><label for="simVariavel">Gasto do dia a dia por mês</label><input id="simVariavel" type="number" min="0" step="0.01"></div>
+        <div class="field"><label for="simReserva">Reserva que quero manter</label><input id="simReserva" type="number" min="0" step="0.01"></div>
+        <div class="form-actions"><button type="submit">Analisar</button></div>
+      </form>
+      <div class="stat-foot" id="simHint" style="margin-top:8px"></div>
+      <div id="simResult"></div>
     </section>
     <section class="card lower" id="pendentes" data-pages="painel pendentes"><div class="section-head"><div><h2>Compras pendentes</h2><p>Capturadas pelo celular. Informe sua parte e quem te deve; ao classificar, a compra vira transação.</p></div><button class="secondary" id="refreshExtrasBtn" type="button">Atualizar</button></div><div id="pendingList" class="capture-list"></div><div class="empty hidden" id="emptyPending">Nenhuma compra pendente.</div><datalist id="peopleList"></datalist></section>
     <section class="card lower" id="receber" data-pages="painel receber"><div class="section-head"><div><h2>A receber</h2><p>Valores em aberto que outras pessoas te devem.</p></div><span class="pill" id="receivableTotal">R$ 0,00</span></div><div id="receivableList"></div><div class="empty hidden" id="emptyReceivables">Ninguém te deve nada no momento.</div></section>
@@ -235,7 +250,7 @@ function renderStats(){
  renderAssinaturas();
 }
 
-function render(){renderStats();renderRenda();renderOrcamento();renderPagamentos();renderLancamentos();renderExtrato();renderFixos();}
+function render(){renderStats();renderRenda();renderOrcamento();renderPagamentos();renderLancamentos();renderExtrato();renderFixos();prepararSimulador();}
 function atualizarAcesso(session){$('loginScreen').style.display=session?'none':'flex';$('appShell').style.visibility=session?'visible':'hidden';if(!session)setStatus('Entre para sincronizar seus dados.');}
 let activeUserId=null; let loadingUserId=null;
 // Ao sair, apaga a cópia local: o próximo login começa limpo e carrega só os dados da própria conta.
@@ -1483,6 +1498,184 @@ document.querySelector('.stats').addEventListener('keydown', e => {
  if(e.target.id === 'bankInput' && e.key === 'Enter') document.querySelector('[data-bank-save]').click();
  if(e.target.id === 'bankInput' && e.key === 'Escape') document.querySelector('[data-bank-cancel]').click();
 });
+
+// ===== "Posso comprar?": projeção mês a mês =====
+// Mês 0 = fatura aberta (parte da sobra atual); meses seguintes = salário (+ VR no modo abatimento) − parcelas − assinaturas − dia a dia.
+function gastoDiaADia(){
+ const v0 = faturaAberta(), hoje = localDate(today);
+ const conta = t => t.type === 'expense' && t.category !== 'Pagamento' && !(CFG.vr_mode === 'card_balance' && t.account === CFG.vr_account);
+ const doCiclo = venc => {
+   const {ini, fim} = cicloDaFatura(venc);
+   const ts = state.transactions.filter(t => conta(t) && t.date >= ini && t.date <= fim);
+   const pend = venc === v0 ? extra.captures.filter(c => c.amount != null && dataSP(c.captured_at) >= ini && dataSP(c.captured_at) <= fim) : [];
+   return {total: round2(ts.reduce((s, t) => s + Number(t.share ?? t.amount), 0) + pend.reduce((s, c) => s + c.amount, 0)), n: ts.length + pend.length, ini, fim};
+ };
+ const passados = [1, 2, 3].map(k => doCiclo(ymAdd(v0, -k))).filter(c => c.n >= 5);
+ const atual = doCiclo(v0);
+ const decorridos = diasEntre(atual.ini, hoje < atual.fim ? hoje : atual.fim, false).length;
+ const totalDias = diasEntre(atual.ini, atual.fim, false).length;
+ const ritmo = decorridos ? round2(atual.total / decorridos * totalDias) : 0;
+ if(passados.length){
+   const media = round2(passados.reduce((s, c) => s + c.total, 0) / passados.length);
+   return {valor: media, fonte: `média das ${passados.length} últimas faturas (${money(media)}); no ritmo atual, esta fecharia em ${money(ritmo)}.`};
+ }
+ return {valor: ritmo, fonte: `pelo ritmo da fatura atual: ${money(atual.total)} em ${decorridos} de ${totalDias} dias. Ajuste se este mês estiver fora do normal.`};
+}
+
+function rendaDoMes(venc){
+ const m = ymAdd(venc, -1), sal = salarioDoMes(m);
+ const salario = sal ? Number(sal.amount) : salarioCalculado(m);
+ return round2(salario + (CFG.vr_mode === 'offset_mae' ? VR_ESTIMADO : 0));
+}
+
+function simularCompra({valor, n, total, variavel, reserva, inicio = 0}){
+ const v0 = faturaAberta(), {ini, fim} = cicloDaFatura(v0), hoje = localDate(today);
+ const sb = calcularSobra();
+ const parcela = round2((total || valor) / n);
+ const restante = hoje <= fim ? diasEntre(hoje, fim, false).length / Math.max(1, diasEntre(ini, fim, false).length) : 0;
+ const H = Math.max(6, inicio + n + 1);
+ const fixos = round2(extra.fixos.reduce((s, f) => s + minhaParteFixo(f), 0));
+ const meses = []; let acum = 0;
+ for(let k = 0; k < H; k++){
+   const venc = ymAdd(v0, k);
+   const parcAtuais = round2(state.installments.filter(i => parcelaNaFatura(i, venc)).reduce((s, i) => s + Number(i.amount), 0));
+   const nova = k >= inicio && k < inicio + n ? parcela : 0;
+   let linha;
+   if(k === 0){
+     const dia = round2(variavel * restante);
+     linha = {venc, atual:true, base:sb.sobra, parcAtuais, fixos, dia, nova, resultado: round2(sb.sobra - dia - nova)};
+     acum = linha.resultado;
+   } else {
+     const entradas = rendaDoMes(venc);
+     linha = {venc, entradas, parcAtuais, fixos, dia:variavel, nova, resultado: round2(entradas - parcAtuais - fixos - variavel - nova)};
+     acum = round2(acum + linha.resultado);
+   }
+   linha.acum = acum; meses.push(linha);
+ }
+ const pior = meses.reduce((m, x) => x.acum < m.acum ? x : m, meses[0]);
+ const veredito = pior.acum >= reserva ? 'sim' : pior.acum >= 0 ? 'cuidado' : 'nao';
+ return {meses, pior, veredito, parcela};
+}
+
+const MESES3 = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const mesCurto = venc => `${MESES3[Number(venc.slice(5,7)) - 1]}/${venc.slice(2,4)}`;
+const rotuloMesSim = x => x.atual ? 'agora' : `na fatura de ${mesCurto(x.venc)}`;
+const capitalizar = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+function analisarCompra(){
+ const valor = Number($('simValor').value);
+ if(!(valor > 0)){ $('simResult').innerHTML = ''; $('simValor').focus(); return; }
+ const sb = calcularSobra();
+ if(sb.saldo == null){ $('simResult').innerHTML = '<div class="pg-result pg-cuidado sim-verdict"><strong>Falta o saldo do banco.</strong>Informe quanto você tem no banco (card "No banco") para eu projetar os próximos meses.</div>'; return; }
+ const nome = $('simNome').value.trim() || 'a compra';
+ const n = Math.min(24, Math.max(1, parseInt($('simParcelas').value, 10) || 1));
+ const total = $('simTotal').value ? Number($('simTotal').value) : null;
+ const variavel = Number($('simVariavel').value) || 0, reserva = Number($('simReserva').value) || 0;
+ const inicio = Number($('simInicio').value) || 0;
+ const base = {valor, variavel, reserva, inicio};
+ const escolhida = simularCompra({...base, n, total: n > 1 ? total : null});
+
+ // Compara opções (sem juros nas opções de comparação, exceto a escolhida)
+ const ns = [...new Set([1, 2, 3, 4, 6, 8, 10, 12, n])].sort((a, b) => a - b);
+ const opcoes = ns.map(k => ({n:k, r: k === n ? escolhida : simularCompra({...base, n:k, total:null})}));
+ const melhorSim = opcoes.find(o => o.r.veredito === 'sim'), melhorCuidado = opcoes.find(o => o.r.veredito === 'cuidado');
+ // Se nada cabe agora, quando caberia?
+ let espera = null;
+ if(!melhorSim){
+   for(let s = 1; s <= 6 && !espera; s++){
+     for(const k of [1, n]){ const r = simularCompra({...base, n:k, total: k > 1 ? total : null, inicio:inicio + s}); if(r.veredito === 'sim'){ espera = {s, n:k}; break; } }
+   }
+ }
+
+ const rot = {sim:['sim', 'Pode comprar.'], cuidado:['cuidado', 'Dá, mas fica apertado.'], nao:['nao', 'Agora não é uma boa.']}[escolhida.veredito];
+ const formaEsc = n === 1 ? 'à vista' : `em ${n}x de ${money(escolhida.parcela)}`;
+ let texto;
+ if(escolhida.veredito === 'sim') texto = `Comprando ${nome} ${formaEsc}, o pior momento é ${rotuloMesSim(escolhida.pior)}, quando você fica com ${money(escolhida.pior.acum)} — acima da reserva de ${money(reserva)}.`;
+ else if(escolhida.veredito === 'cuidado') texto = `Comprando ${formaEsc}: ${rotuloMesSim(escolhida.pior)} você fica com só ${money(escolhida.pior.acum)}, abaixo da reserva de ${money(reserva)}. Qualquer gasto fora do previsto aperta.`;
+ else texto = `Comprando ${formaEsc}: ${rotuloMesSim(escolhida.pior)} faltariam ${money(-escolhida.pior.acum)} para pagar tudo.`;
+
+ let recomendacao;
+ if(melhorSim && melhorSim.n === 1) recomendacao = `Recomendo <strong>à vista</strong>: cabe sem comprometer os próximos meses e não deixa parcela nova acumulando.`;
+ else if(melhorSim) recomendacao = `A opção mais curta que cabe com folga é <strong>${melhorSim.n}x de ${money(melhorSim.r.parcela)}</strong>${total && melhorSim.n === n ? ` (com juros de ${money(round2(total - valor))})` : ' (sem juros)'}.${melhorSim.n !== n ? ` Menos parcelas que isso deixa algum mês abaixo da reserva.` : ''}`;
+ else if(espera) recomendacao = `Nenhuma forma cabe com folga agora. Se a 1ª parcela cair <strong>só na fatura de ${mesCurto(ymAdd(faturaAberta(), inicio + espera.s))}</strong>, cabe ${espera.n === 1 ? 'à vista' : `em ${espera.n}x`} — é quando a sua situação melhora (parcelas acabando ou sobra acumulada).`;
+ else if(melhorCuidado) recomendacao = `Só cabe sem faltar dinheiro em <strong>${melhorCuidado.n}x</strong>, e mesmo assim abaixo da reserva. Eu não compraria agora.`;
+ else recomendacao = `Não cabe em nenhuma forma de pagamento nos próximos meses sem faltar dinheiro.`;
+
+ // Quanto dá para gastar no dia a dia para a compra caber
+ const lim = limiteDiaADia({...base, n, total: n > 1 ? total : null});
+ const limSem = limiteDiaADia({...base, valor:0, n:1, total:null});
+ const porDia = v => money(round2(v / 30.4));
+ const blocoLimite = lim.max < 0
+   ? `<div class="pg-result pg-nao sim-verdict"><strong>Mesmo sem gastar nada no dia a dia, não fecha.</strong>Com essa compra, em ${rotuloMesSim(lim.mes)} faltaria dinheiro para as parcelas e contas já assumidas.</div>`
+   : `<div class="pg-result pg-${lim.max >= variavel ? 'sim' : 'cuidado'} sim-verdict"><strong>Para caber, gaste até ${money(lim.max)} por mês no dia a dia (${porDia(lim.max)} por dia).</strong>
+       ${lim.max >= variavel ? `O seu ritmo atual (${money(variavel)} por mês) já cabe.` : `Hoje você está em ${money(variavel)} por mês (${porDia(variavel)} por dia): precisaria cortar ${money(round2(variavel - lim.max))} por mês.`}
+       O mês mais apertado é ${rotuloMesSim(lim.mes)}, quando você chega à reserva de ${money(reserva)}. Sem a compra, o limite seria ${money(Math.max(0, limSem.max))} por mês.
+       ${lim.semReserva >= 0 ? `<br>Para não usar nada da sobra que você tem hoje: até ${money(lim.semReserva)} por mês (${porDia(lim.semReserva)} por dia).` : ''}
+       ${CFG.vr_mode === 'offset_mae' && lim.max > 0 ? `<br>Esse valor inclui a comida paga com o VR (${money(VR_ESTIMADO)} por mês): para o resto, sobram cerca de ${money(Math.max(0, round2(lim.max - VR_ESTIMADO)))} por mês.` : ''}</div>`;
+
+ // Leituras da situação
+ const m1 = escolhida.meses[1];
+ const comprAntes = m1.entradas ? (m1.parcAtuais + m1.fixos) / m1.entradas : 0;
+ const comprDepois = m1.entradas ? (m1.parcAtuais + m1.fixos + m1.nova) / m1.entradas : 0;
+ const pct = x => `${Math.round(x * 100)}%`;
+ const insights = [];
+ insights.push(`Parcelas e assinaturas levam <strong>${pct(comprAntes)}</strong> da sua renda em ${mesCurto(m1.venc)}${m1.nova ? `; com ${nome}, <strong>${pct(comprDepois)}</strong>` : ''}. O recomendável é ficar abaixo de 30%.`);
+ const queda = escolhida.meses.slice(1).find((x, i, arr) => i > 0 && x.parcAtuais < arr[0].parcAtuais * 0.8);
+ if(queda) insights.push(`Suas parcelas atuais caem de ${money(m1.parcAtuais)} (${mesCurto(m1.venc)}) para ${money(queda.parcAtuais)} em ${mesCurto(queda.venc)}. Compras maiores ficam mais leves a partir daí.`);
+ insights.push(`Gasto do dia a dia usado na conta: ${money(variavel)} por mês.`);
+ if(total && n > 1 && total > valor) insights.push(`Parcelar com juros custa ${money(round2(total - valor))} a mais (${pct((total - valor) / valor)} do valor).`);
+ const sobraAtual = escolhida.meses[0];
+ insights.push(`Hoje, depois de pagar tudo o que está em aberto, sobram ${money(sobraAtual.base)} até ${fmtCurta(sb.horizonte)}.`);
+
+ const linhaMes = x => `<tr><td>${x.atual ? `Agora (até ${fmtCurta(sb.horizonte)})` : mesCurto(x.venc)}</td><td>${x.atual ? 'sobra ' + money(x.base) : money(x.entradas)}</td><td>${x.atual ? '—' : '− ' + money(x.parcAtuais)}</td><td>${x.atual ? '—' : '− ' + money(x.fixos)}</td><td>− ${money(x.dia)}</td><td>${x.nova ? '− ' + money(x.nova) : '—'}</td><td class="${x.resultado < 0 ? 'red' : ''}">${money(x.resultado)}</td><td class="${x.acum < 0 ? 'red' : x.acum < reserva ? '' : 'green'}"><strong>${money(x.acum)}</strong></td></tr>`;
+ $('simResult').innerHTML = `
+   <div class="pg-result pg-${rot[0]} sim-verdict"><strong>${rot[1]}</strong>${texto}</div>
+   ${blocoLimite}
+   <p style="margin:12px 0 0;font-size:14px">${recomendacao}</p>
+   <ul class="sim-insights">${insights.map(i => `<li>${i}</li>`).join('')}</ul>
+   <h3 class="sim-h">Comparando as formas de pagar</h3>
+   <div class="table-wrap"><table class="sim-table"><thead><tr><th>Forma</th><th>Parcela</th><th>Pior mês</th><th>Fica com</th><th>Resultado</th></tr></thead><tbody>
+   ${opcoes.map(o => `<tr class="${melhorSim && o.n === melhorSim.n ? 'sim-best' : ''}"><td>${o.n === 1 ? 'À vista' : o.n + 'x'}${o.n === n && total && n > 1 ? ' (com juros)' : ''}</td><td>${money(o.r.parcela)}</td><td>${o.r.pior.atual ? 'agora' : mesCurto(o.r.pior.venc)}</td><td class="${o.r.pior.acum < 0 ? 'red' : ''}">${money(o.r.pior.acum)}</td><td>${{sim:'cabe', cuidado:'apertado', nao:'não cabe'}[o.r.veredito]}</td></tr>`).join('')}
+   </tbody></table></div>
+   <h3 class="sim-h">Mês a mês (${n === 1 ? 'à vista' : n + 'x'})</h3>
+   <div class="table-wrap"><table class="sim-table"><thead><tr><th>Fatura</th><th>Entra / sobra</th><th>Parcelas</th><th>Assinaturas</th><th>Dia a dia</th><th>Nova compra</th><th>No mês</th><th>Acumulado</th></tr></thead><tbody>
+   ${escolhida.meses.map(linhaMes).join('')}</tbody></table></div>
+   <div class="env-note">"Agora" já desconta tudo o que está em aberto (fatura atual, parcelas deste mês, dívidas) e soma o salário que ainda entra até o vencimento. Nos meses seguintes, a entrada é o salário${CFG.vr_mode === 'offset_mae' ? ' + VR estimado' : ''}. Valores a receber não entram.</div>`;
+}
+
+
+// Maior gasto mensal do dia a dia que mantém o acumulado acima da reserva em todos os meses.
+function limiteDiaADia(params){
+ const a = simularCompra({...params, variavel:0}), b1 = simularCompra({...params, variavel:1});
+ let max = Infinity, mes = a.meses[0];
+ a.meses.forEach((x, i) => {
+   const coef = round2(x.acum - b1.meses[i].acum) || 0;   // quanto 1 real/mês de dia a dia reduz o acumulado neste mês
+   if(coef > 0){ const v = (x.acum - params.reserva) / coef; if(v < max){ max = v; mes = x; } }
+ });
+ // Sem tocar na sobra atual: cada mês precisa se pagar sozinho.
+ const semReserva = Math.min(...a.meses.slice(1).map(x => x.resultado));
+ return {max: Math.floor((max === Infinity ? 0 : max) * 100) / 100, mes, semReserva: Math.floor(semReserva * 100) / 100};
+}
+function montarInicioSimulador(){
+ if(!$('simInicio')) return;
+ const v0 = faturaAberta(), atual = $('simInicio').value;
+ $('simInicio').innerHTML = [0, 1, 2, 3].map(k => {
+   const venc = ymAdd(v0, k);
+   return `<option value="${k}">${mesCurto(venc)} — vence ${String(DIA_VENCIMENTO).padStart(2,'0')}/${venc.slice(5,7)}${k === 0 ? ' (aberta)' : ''}</option>`;
+ }).join('');
+ if(atual) $('simInicio').value = atual;
+}
+function prepararSimulador(){
+ if(!$('simForm')) return;
+ montarInicioSimulador();
+ const g = gastoDiaADia();
+ if(!$('simVariavel').dataset.editado) $('simVariavel').value = g.valor.toFixed(2);
+ if(!$('simReserva').dataset.editado) $('simReserva').value = Math.round(rendaDoMes(ymAdd(faturaAberta(), 1)) * 0.1).toFixed(2);
+ $('simHint').textContent = `Dia a dia estimado — ${g.fonte} Reserva sugerida: 10% da renda.`;
+}
+$('simVariavel').addEventListener('input', e => { e.target.dataset.editado = '1'; });
+$('simReserva').addEventListener('input', e => { e.target.dataset.editado = '1'; });
+$('simForm').addEventListener('submit', e => { e.preventDefault(); analisarCompra(); });
 aplicarConfig(null);
 montarCategorias();
 irPara(location.hash.slice(1));render();renderPending();renderReceivables();renderFixos();renderPagar();
